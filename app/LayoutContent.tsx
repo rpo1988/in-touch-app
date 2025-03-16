@@ -15,7 +15,9 @@ export default function LayoutContent({
     <AppRouterCacheProvider options={{ enableCssLayer: true }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box component="main">{children}</Box>
+        <Box component="main" className="w-screen h-screen">
+          {children}
+        </Box>
       </ThemeProvider>
     </AppRouterCacheProvider>
   );
