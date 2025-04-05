@@ -9,7 +9,7 @@ import {
 
 export type ActiveChatHeaderProps = {
   title: string;
-  subtitle: string;
+  subtitle?: string;
 };
 
 export default function ActiveChatHeader({
@@ -18,13 +18,30 @@ export default function ActiveChatHeader({
 }: ActiveChatHeaderProps) {
   return (
     <>
-      <ListItem component="div" className="bg-gray-50">
+      <ListItem
+        component="div"
+        className="bg-gray-50"
+        sx={{
+          height: "56px",
+          maxHeight: "56px",
+        }}
+      >
         <ListItemAvatar>
           <Avatar>
             <Person />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={title} secondary={subtitle} />
+        <ListItemText
+          primary={title}
+          secondary={subtitle}
+          slotProps={{
+            secondary: {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            },
+          }}
+        />
       </ListItem>
       <Divider />
     </>

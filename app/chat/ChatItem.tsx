@@ -1,4 +1,3 @@
-import { LastChat } from "@/app/chat/_mock";
 import { Person } from "@mui/icons-material";
 import {
   Avatar,
@@ -6,25 +5,30 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
+import dayjs from "dayjs";
 
-export type ChatItemProps = LastChat & {
-  onSelected: (id: string) => void;
+export type ChatItemProps = {
+  contactName: string;
+  messageDate: Date | string;
+  onSelected: () => void;
 };
 
 export default function ChatItem({
-  id,
-  title,
-  subtitle,
+  contactName,
+  messageDate,
   onSelected,
 }: ChatItemProps) {
   return (
-    <ListItemButton onClick={() => onSelected(id)}>
+    <ListItemButton onClick={onSelected}>
       <ListItemAvatar>
         <Avatar>
           <Person />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary={title} secondary={subtitle} />
+      <ListItemText
+        primary={contactName}
+        secondary={dayjs(messageDate).format("DD/MM/YYYY")}
+      />
     </ListItemButton>
   );
 }
