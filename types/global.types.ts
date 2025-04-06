@@ -7,8 +7,10 @@ export interface IContact {
 }
 
 export interface IChatMessage {
+  _id: string;
   date: Date | string;
   text: string;
+  sentByMe: boolean;
 }
 
 export interface IChatList {

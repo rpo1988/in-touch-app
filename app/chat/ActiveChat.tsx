@@ -1,40 +1,39 @@
 import ActiveChatContent from "@/app/chat/ActiveChatContent";
 import ActiveChatFooter from "@/app/chat/ActiveChatFooter";
 import ActiveChatHeader from "@/app/chat/ActiveChatHeader";
+import { useMe } from "@/providers/ProfileProvider";
 import { getChatHistory } from "@/services/chat.service";
 import { useQuery } from "@tanstack/react-query";
 
 type ActiveChatProps = {
-  meId: string;
   contactId?: string;
 };
 
-export default function ActiveChat({ meId, contactId }: ActiveChatProps) {
+export default function ActiveChat({ contactId }: ActiveChatProps) {
+  const { data: me } = useMe();
   const {
     data: chatHistory,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["chat-history", meId, contactId],
-    queryFn: () => getChatHistory(meId, contactId!),
-    enabled: !!contactId,
+    enabled: !!contactId && !!me?._id,
+    queryKey: ["chat-history", me!._id, contactId],
+    queryFn: () => getChatHistory(me!._id, contactId!),
   });
 
-  if (isLoading) return <div className="w-full p-4">Loading...</div>;
-  if (error) return <div className="w-full p-4">Error loading chat list</div>;
+  if (error)
+    return <div className="w-full p-4">Error loading chat history</div>;
 
   return (
     <div className="w-full h-full flex flex-col">
-      {!chatHistory ? null : (
-        <>
-          <ActiveChatHeader
-            title={chatHistory.contact.name}
-            subtitle={chatHistory.contact.statusInfo}
-          />
-          <ActiveChatContent />
-          <ActiveChatFooter />
-        </>
+      {!!chatHistory && (
+        <ActiveChatHeader
+          title={chatHistory.contact.name}
+          subtitle={chatHistory.contact.statusInfo}
+        />
       )}
+      <ActiveChatContent data={chatHistory?.history} isLoading={isLoading} />
+      {!!chatHistory && <ActiveChatFooter chatId={chatHistory._id} />}
     </div>
   );
 }

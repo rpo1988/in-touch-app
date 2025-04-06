@@ -1,24 +1,31 @@
 import ChatItem from "@/app/chat/ChatItem";
+import { useMe } from "@/providers/ProfileProvider";
 import { getChatList } from "@/services/chat.service";
-import { List } from "@mui/material";
+import { CircularProgress, List } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 type ChatListProps = {
-  meId: string;
   onSelected: (id: string) => void;
 };
 
-export default function ChatList({ meId, onSelected }: ChatListProps) {
+export default function ChatList({ onSelected }: ChatListProps) {
+  const { data: me } = useMe();
   const {
     data: chatList = [],
     isLoading,
     error,
   } = useQuery({
+    enabled: !!me?._id,
     queryKey: ["chat-list"],
-    queryFn: () => getChatList(meId),
+    queryFn: () => getChatList(me!._id),
   });
 
-  if (isLoading) return <div className="w-full p-4">Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="w-full p-4 flex items-center justify-center">
+        <CircularProgress />
+      </div>
+    );
   if (error) return <div className="w-full p-4">Error loading chat list</div>;
 
   return (

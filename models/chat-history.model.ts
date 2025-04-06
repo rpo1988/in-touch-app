@@ -20,6 +20,7 @@ const chatHistorySchema: Schema<IChatHistoryModel> = new Schema({
       type: {
         date: { type: Date, required: true },
         text: { type: String, required: true },
+        sentByMe: { type: Boolean, required: true },
       },
       required: true,
     },
