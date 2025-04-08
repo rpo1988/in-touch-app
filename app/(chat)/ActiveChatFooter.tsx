@@ -2,11 +2,13 @@ import { useMe } from "@/providers/ProfileProvider";
 import { sendMessage } from "@/services/chat.service";
 import { Add, Mic, Send } from "@mui/icons-material";
 import {
+  Box,
   CircularProgress,
   Divider,
   IconButton,
   TextField,
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +23,7 @@ interface ActiveChatFooterProps {
 
 export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
   const queryClient = useQueryClient();
-  const { data: me } = useMe();
+  const { me } = useMe();
   const formMethods = useForm<FormValue>({
     defaultValues: {
       text: "",
@@ -51,18 +53,20 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
   };
 
   useEffect(() => {
-    console.log("INIT");
     inputRef?.current?.focus();
-    return () => {
-      console.log("FIN");
-    };
   }, []);
 
   return (
     <>
       <Divider />
-      <form
-        className="bg-gray-50 flex flex-row py-2 px-4 gap-3 items-center"
+      <Box
+        component="form"
+        autoComplete="off"
+        noValidate
+        sx={{
+          bgcolor: grey[100],
+        }}
+        className="flex flex-row py-2 px-4 gap-3 items-center"
         onSubmit={formMethods.handleSubmit(onSubmit)}
       >
         <IconButton disabled={addMutation.isPending}>
@@ -89,7 +93,7 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
             {!text ? <Mic /> : <Send />}
           </IconButton>
         )}
-      </form>
+      </Box>
     </>
   );
 }

@@ -6,6 +6,7 @@ import {
   ListItemAvatar,
   ListItemText,
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
 
 export type ActiveChatHeaderProps = {
   title: string;
@@ -20,10 +21,10 @@ export default function ActiveChatHeader({
     <>
       <ListItem
         component="div"
-        className="bg-gray-50"
         sx={{
-          height: "56px",
-          maxHeight: "56px",
+          height: "64px",
+          maxHeight: "64px",
+          bgcolor: grey[100],
         }}
       >
         <ListItemAvatar>

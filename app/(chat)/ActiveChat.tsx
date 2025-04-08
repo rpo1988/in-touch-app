@@ -1,6 +1,6 @@
-import ActiveChatContent from "@/app/chat/ActiveChatContent";
-import ActiveChatFooter from "@/app/chat/ActiveChatFooter";
-import ActiveChatHeader from "@/app/chat/ActiveChatHeader";
+import ActiveChatContent from "@/app/(chat)/ActiveChatContent";
+import ActiveChatFooter from "@/app/(chat)/ActiveChatFooter";
+import ActiveChatHeader from "@/app/(chat)/ActiveChatHeader";
 import { useMe } from "@/providers/ProfileProvider";
 import { getChatHistory } from "@/services/chat.service";
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ type ActiveChatProps = {
 };
 
 export default function ActiveChat({ contactId }: ActiveChatProps) {
-  const { data: me } = useMe();
+  const { me } = useMe();
   const {
     data: chatHistory,
     isLoading,

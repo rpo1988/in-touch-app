@@ -20,9 +20,7 @@ export default function LayoutContent({
         <CssBaseline />
         <QueryClientProvider client={queryClient}>
           <Box component="main" className="w-screen h-screen">
-            <ProfileProvider meId="67f0ace5458efc03732814cc">
-              {children}
-            </ProfileProvider>
+            <ProfileProvider>{children}</ProfileProvider>
           </Box>
         </QueryClientProvider>
       </ThemeProvider>

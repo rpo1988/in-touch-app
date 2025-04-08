@@ -19,7 +19,7 @@ export default function ChatMessage({
         sx={{
           bgcolor: sentByMe ? green["A100"] : "fff",
         }}
-        className={clsx("flex flex-col m-2 p-2", {
+        className={clsx("flex flex-col mx-4 my-1 p-2", {
           "self-end": sentByMe,
           "self-start": !sentByMe,
         })}

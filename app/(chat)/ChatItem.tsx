@@ -10,16 +10,18 @@ import dayjs from "dayjs";
 export type ChatItemProps = {
   contactName: string;
   messageDate: Date | string;
+  selected?: boolean;
   onSelected: () => void;
 };
 
 export default function ChatItem({
   contactName,
   messageDate,
+  selected,
   onSelected,
 }: ChatItemProps) {
   return (
-    <ListItemButton onClick={onSelected}>
+    <ListItemButton selected={selected} onClick={onSelected}>
       <ListItemAvatar>
         <Avatar>
           <Person />

@@ -5,6 +5,7 @@ type IContactModel = IContact & Document;
 
 const contactSchema: Schema<IContactModel> = new Schema(
   {
+    username: { type: String, required: true },
     name: { type: String, required: true },
     statusInfo: { type: String, default: "" },
   },

@@ -1,5 +1,6 @@
 export interface IContact {
   _id: string;
+  username: string;
   name: string;
   statusInfo?: string;
   createdAt: Date | string;

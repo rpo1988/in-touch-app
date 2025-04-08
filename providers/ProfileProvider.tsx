@@ -2,29 +2,65 @@
 
 import { getMe } from "@/services/chat.service";
 import { CircularProgress } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { createContext, PropsWithChildren, useContext } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Cookies from "js-cookie";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-interface UseInternalProfileProps {
-  meId: string;
-}
+const SS_KEY_USERNAME = "username";
 
-const useInternalProfile = ({ meId }: UseInternalProfileProps) => {
-  const { data, isLoading, error } = useQuery({
+const useInternalProfile = () => {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const queryClient = useQueryClient();
+  const [meId, setMeId] = useState<string | null>(null);
+  const { data, isFetching, error } = useQuery({
+    enabled: !!meId,
+    initialData: null,
     queryKey: ["me", meId],
-    queryFn: () => getMe(meId),
+    queryFn: () => getMe(meId!),
   });
 
+  const login = async (username: string) => {
+    // TODO: Comprobar si existe en BBDD antes
+    Cookies.set(SS_KEY_USERNAME, username, { expires: 1 });
+    setMeId(username);
+  };
+
+  const logout = () => {
+    Cookies.remove(SS_KEY_USERNAME);
+    queryClient.setQueryData(["me"], null);
+    setMeId(null);
+  };
+
+  const retrievePrevSession = () => {
+    const prevUsername = Cookies.get(SS_KEY_USERNAME);
+    setMeId(prevUsername || null);
+  };
+
+  useEffect(() => {
+    retrievePrevSession();
+    setIsInitialized(true);
+  }, []);
+
   return {
-    data,
-    isLoading,
+    me: data,
+    isFetching,
     error,
+    isInitialized,
+    login,
+    logout,
+    retrievePrevSession,
   };
 };
 
 const ProfileContext = createContext<Pick<
   ReturnType<typeof useInternalProfile>,
-  "data" | "isLoading" | "error"
+  "me" | "isFetching" | "error" | "login" | "logout" | "retrievePrevSession"
 > | null>(null);
 
 export const useMe = () => {
@@ -37,16 +73,31 @@ export const useMe = () => {
   return context;
 };
 
-type ProfileProviderProps = PropsWithChildren & {
-  meId: string;
-};
+type ProfileProviderProps = PropsWithChildren;
 
-export const ProfileProvider = ({ children, meId }: ProfileProviderProps) => {
-  const { data, isLoading, error } = useInternalProfile({ meId });
+export const ProfileProvider = ({ children }: ProfileProviderProps) => {
+  const {
+    me,
+    isFetching,
+    error,
+    isInitialized,
+    login,
+    logout,
+    retrievePrevSession,
+  } = useInternalProfile();
 
   return (
-    <ProfileContext.Provider value={{ data, isLoading, error }}>
-      {isLoading ? (
+    <ProfileContext.Provider
+      value={{
+        me,
+        isFetching,
+        error,
+        login,
+        logout,
+        retrievePrevSession,
+      }}
+    >
+      {!isInitialized ? (
         <div className="w-screen h-screen flex items-center justify-center">
           <CircularProgress />
         </div>

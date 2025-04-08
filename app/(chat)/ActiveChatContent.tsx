@@ -1,4 +1,4 @@
-import ChatMessage from "@/app/chat/ChatMessage";
+import ChatMessage from "@/app/(chat)/ChatMessage";
 import { IChatMessage } from "@/types/global.types";
 import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
