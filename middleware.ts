@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const USERNAME_KEY = "username";
+const SS_KEY_USER_ID = "userId";
 const LOGIN_PATH = "/login";
 
 export function middleware(request: NextRequest) {
-  const username = request.cookies.get(USERNAME_KEY)?.value;
+  const meId = request.cookies.get(SS_KEY_USER_ID)?.value;
   const isProtectedPath = request.nextUrl.pathname !== LOGIN_PATH;
 
-  if (isProtectedPath && !username) {
+  if (isProtectedPath && !meId) {
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 

@@ -1,30 +1,31 @@
-export interface IContact {
+export interface IBase {
   _id: string;
-  username: string;
-  name: string;
-  statusInfo?: string;
   createdAt: Date | string;
   updatedAt: Date | string;
 }
 
-export interface IChatMessage {
-  _id: string;
-  date: Date | string;
+export interface IContact extends IBase {
+  username: string;
+  name: string;
+  statusInfo?: string;
+}
+
+export interface IChatMessage extends IBase {
+  chat: IChat;
+  sourceContact: IContact;
   text: string;
-  sentByMe: boolean;
 }
 
-export interface IChatList {
-  _id: string;
-  contact: IContact;
-  me: IContact;
-  previousMsg: IChatMessage;
+export interface IChat extends IBase {
+  sourceContact: IContact;
+  targetContact: IContact;
 }
 
-export interface IChatHistory {
-  _id: string;
-  contact: IContact;
-  me: IContact;
+export interface IChatInfo extends IChat {
+  lastChatMessage: IChatMessage | null;
+}
+
+export interface IChatHistory extends IChat {
   history: IChatMessage[];
 }
 

@@ -1,4 +1,5 @@
 import ChatMessage from "@/app/(chat)/ChatMessage";
+import { useMe } from "@/providers/ProfileProvider";
 import { IChatMessage } from "@/types/global.types";
 import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
@@ -12,6 +13,8 @@ export default function ActiveChatContent({
   data,
   isLoading,
 }: ActiveChatContentProps) {
+  const { me } = useMe();
+
   return (
     <>
       <div
@@ -23,7 +26,15 @@ export default function ActiveChatContent({
         {isLoading ? (
           <CircularProgress />
         ) : !!data ? (
-          data.map((message) => <ChatMessage key={message._id} {...message} />)
+          data.map((message) => (
+            <ChatMessage
+              key={message._id}
+              _id={message._id}
+              createdAt={message.createdAt}
+              text={message.text}
+              sentByMe={me?._id === message.sourceContact._id}
+            />
+          ))
         ) : null}
       </div>
     </>

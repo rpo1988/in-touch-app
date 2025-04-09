@@ -4,11 +4,13 @@ import { green } from "@mui/material/colors";
 import clsx from "clsx";
 import dayjs from "dayjs";
 
-type ChatMessageProps = IChatMessage;
+type ChatMessageProps = Pick<IChatMessage, "_id" | "createdAt" | "text"> & {
+  sentByMe: boolean;
+};
 
 export default function ChatMessage({
   _id,
-  date,
+  createdAt,
   text,
   sentByMe,
 }: ChatMessageProps) {
@@ -33,7 +35,7 @@ export default function ChatMessage({
             fontSize: 12,
           }}
         >
-          {dayjs(date).format("HH:mma")}
+          {dayjs(createdAt).format("HH:mma")}
         </Typography>
       </Paper>
     </>

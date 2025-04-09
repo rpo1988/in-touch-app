@@ -37,10 +37,11 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         {chatList.map((item) => (
           <ChatItem
             key={item._id}
-            contactName={item.contact.name}
-            messageDate={item.previousMsg.date}
-            selected={selectedId === item.contact._id}
-            onSelected={() => onSelected(item.contact._id)}
+            contactName={item.targetContact.name}
+            lastMessage={item.lastChatMessage?.text}
+            messageDate={item.createdAt}
+            selected={selectedId === item.targetContact._id}
+            onSelected={() => onSelected(item._id)}
           />
         ))}
       </List>
