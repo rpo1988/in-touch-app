@@ -27,3 +27,7 @@ export interface IChatHistory {
   me: IContact;
   history: IChatMessage[];
 }
+
+export interface ApiError {
+  message: string;
+}

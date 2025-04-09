@@ -11,7 +11,7 @@ import {
 import { grey } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 interface FormValue {
   text: string;
@@ -24,18 +24,24 @@ interface ActiveChatFooterProps {
 export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
   const queryClient = useQueryClient();
   const { me } = useMe();
-  const formMethods = useForm<FormValue>({
+  const {
+    control,
+    formState: { isValid },
+    reset,
+    watch,
+    handleSubmit,
+  } = useForm<FormValue>({
     defaultValues: {
       text: "",
     },
   });
-  const text = formMethods.watch("text");
+  const text = watch("text");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const addMutation = useMutation({
     mutationFn: (text: string) => sendMessage(me!._id, chatId, text),
     onSuccess: () => {
-      formMethods.reset();
+      reset();
       queryClient.invalidateQueries({
         queryKey: ["chat-history"],
       });
@@ -47,7 +53,7 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
   });
 
   const onSubmit = async (formValue: FormValue) => {
-    if (addMutation.isPending) return;
+    if (addMutation.isPending || !isValid) return;
 
     addMutation.mutate(formValue.text);
   };
@@ -67,22 +73,29 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
           bgcolor: grey[100],
         }}
         className="flex flex-row py-2 px-4 gap-3 items-center"
-        onSubmit={formMethods.handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <IconButton disabled={addMutation.isPending}>
           <Add />
         </IconButton>
-        <TextField
-          placeholder="Type a message"
-          variant="outlined"
-          className="grow"
-          sx={{
-            bgcolor: "white",
-          }}
-          {...formMethods.register("text")}
+        <Controller
+          name="text"
+          control={control}
+          rules={{ required: "This field is required." }}
           disabled={addMutation.isPending}
-          autoComplete="off"
-          inputRef={inputRef}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              placeholder="Type a message"
+              variant="outlined"
+              className="grow"
+              sx={{
+                bgcolor: "white",
+              }}
+              autoComplete="off"
+              inputRef={inputRef}
+            />
+          )}
         />
         {addMutation.isPending ? (
           <span className="w-10 h-10 flex items-center justify-center">

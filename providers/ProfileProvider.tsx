@@ -1,5 +1,6 @@
 "use client";
 
+import { signin } from "@/services/auth.service";
 import { getMe } from "@/services/chat.service";
 import { CircularProgress } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ import {
   useState,
 } from "react";
 
-const SS_KEY_USERNAME = "username";
+const SS_KEY_USER_ID = "userId";
 
 const useInternalProfile = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -26,20 +27,21 @@ const useInternalProfile = () => {
   });
 
   const login = async (username: string) => {
-    // TODO: Comprobar si existe en BBDD antes
-    Cookies.set(SS_KEY_USERNAME, username, { expires: 1 });
-    setMeId(username);
+    const data = await signin({ username });
+    queryClient.setQueryData(["me", data._id], data);
+    Cookies.set(SS_KEY_USER_ID, data._id, { expires: 1 });
+    setMeId(data._id);
   };
 
   const logout = () => {
-    Cookies.remove(SS_KEY_USERNAME);
+    Cookies.remove(SS_KEY_USER_ID);
     queryClient.setQueryData(["me"], null);
     setMeId(null);
   };
 
   const retrievePrevSession = () => {
-    const prevUsername = Cookies.get(SS_KEY_USERNAME);
-    setMeId(prevUsername || null);
+    const prevUserId = Cookies.get(SS_KEY_USER_ID);
+    setMeId(prevUserId || null);
   };
 
   useEffect(() => {

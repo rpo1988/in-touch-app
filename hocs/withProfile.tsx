@@ -16,7 +16,7 @@ export function withProfile<T extends WithProfileProps>(
 
     useEffect(() => {
       if (!isFetching && !me) {
-        router.replace("/login");
+        return router.replace("/login");
       }
     }, [me, isFetching, router]);
 

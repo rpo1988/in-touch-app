@@ -2,6 +2,7 @@
 
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
+import { ApiError } from "@/types/global.types";
 import {
   Box,
   Button,
@@ -10,29 +11,40 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 interface FormValue {
   username: string;
 }
 
-export default withoutProfile(function Login() {
+export default withoutProfile(function LoginPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { me, login } = useMe();
   const { replace } = useRouter();
-  const formMethods = useForm<FormValue>({
+  const {
+    control,
+    formState: { isValid },
+    handleSubmit,
+  } = useForm<FormValue>({
     defaultValues: {
-      username: "67f0ace5458efc03732814cc", // TODO: Remove default value once test is finished
+      username: "",
     },
+  });
+  const loginMutation = useMutation<void, AxiosError<ApiError>, string>({
+    mutationFn: (username: string) => login(username),
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onSubmit = async (formValue: FormValue) => {
+    if (!isValid) return;
+
     try {
       setIsLoading(true);
-      await login(formValue.username);
+      await loginMutation.mutateAsync(formValue.username);
       replace("/");
     } catch (error) {
       console.error(error);
@@ -41,10 +53,14 @@ export default withoutProfile(function Login() {
   };
 
   useEffect(() => {
-    if (!!me) replace("/");
+    if (isLoading) return;
+    inputRef?.current?.focus();
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!!me) return replace("/");
 
     setIsLoading(false);
-    inputRef?.current?.focus();
   }, [me, replace]);
 
   return (
@@ -64,16 +80,28 @@ export default withoutProfile(function Login() {
           className="w-full flex flex-col gap-3"
           autoComplete="off"
           noValidate
-          onSubmit={formMethods.handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit)}
         >
-          <TextField
-            placeholder="Type your username"
-            variant="outlined"
-            size="small"
-            {...formMethods.register("username")}
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: "This field is required." }}
             disabled={isLoading}
-            autoComplete="off"
-            inputRef={inputRef}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                placeholder="Type your username"
+                variant="outlined"
+                size="small"
+                autoComplete="off"
+                error={loginMutation.isError || !!fieldState.error}
+                helperText={
+                  loginMutation.error?.response?.data.message ||
+                  fieldState.error?.message
+                }
+                inputRef={inputRef}
+              />
+            )}
           />
           <Button
             type="submit"

@@ -2,18 +2,16 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { ContactModel } from "@/models/contact.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ meId: string }> }
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { meId } = await params;
+    const body = await request.json();
+    const username = body.username as string;
     await connectToDatabase();
     const profile = await ContactModel.findOne().where({
-      _id: meId,
+      username,
     });
 
-    if (!profile) throw new Error("User not found");
+    if (!profile) throw new Error("Username not found");
 
     return NextResponse.json(profile, { status: 200 });
   } catch (error) {

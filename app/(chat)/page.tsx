@@ -6,7 +6,7 @@ import { withProfile } from "@/hocs/withProfile";
 import { Divider } from "@mui/material";
 import { useState } from "react";
 
-export default withProfile(function Chat() {
+export default withProfile(function ChatPage() {
   const [selectedContact, setSelectedContact] = useState<string>();
 
   return (

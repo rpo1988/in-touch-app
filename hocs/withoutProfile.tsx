@@ -16,7 +16,7 @@ export function withoutProfile<T extends WithoutProfileProps>(
 
     useEffect(() => {
       if (!isFetching && !!me) {
-        router.replace("/");
+        return router.replace("/");
       }
     }, [me, isFetching, router]);
 
