@@ -18,7 +18,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     error,
   } = useQuery({
     enabled: !!me?._id,
-    queryKey: ["chat-list"],
+    queryKey: ["chat-list", me?._id],
     queryFn: () => getChatList(me!._id),
   });
 
@@ -37,10 +37,10 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         {chatList.map((item) => (
           <ChatItem
             key={item._id}
-            contactName={item.targetContact.name}
-            lastMessage={item.lastChatMessage?.text}
-            messageDate={item.createdAt}
-            selected={selectedId === item.targetContact._id}
+            primary={item.members[0].name}
+            secondary={item.lastChatMessage?.text}
+            third={item.createdAt}
+            selected={item._id === selectedId}
             onSelected={() => onSelected(item._id)}
           />
         ))}

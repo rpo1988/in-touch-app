@@ -1,4 +1,4 @@
-import { ContactModel } from "@/models/contact.model";
+import { UserModel } from "@/models/user.model";
 import { IChat } from "@/types/global.types";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
@@ -6,16 +6,18 @@ type IChatModel = IChat & Document;
 
 const chatSchema: Schema<IChatModel> = new Schema(
   {
-    sourceContact: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: ContactModel.modelName,
+      ref: UserModel.modelName,
       required: true,
     },
-    targetContact: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: ContactModel.modelName,
-      required: true,
-    },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: UserModel.modelName,
+        required: true,
+      },
+    ],
   },
   { timestamps: true }
 );

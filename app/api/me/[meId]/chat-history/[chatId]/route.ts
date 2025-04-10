@@ -12,8 +12,8 @@ export async function GET(
     const { chatId } = await params;
     await connectToDatabase();
     const chat = await ChatModel.findById(chatId)
-      .populate("sourceContact")
-      .populate("targetContact");
+      .populate("createdBy")
+      .populate("members");
 
     if (!chat) throw new Error("ChatId does not exist.");
 
@@ -21,14 +21,14 @@ export async function GET(
       .where({
         chat: chat?._id,
       })
-      .populate("sourceContact")
+      .populate("createdBy")
       .populate("chat");
     const chatHistory: IChatHistory = {
       _id: chat._id,
       createdAt: chat.createdAt,
       updatedAt: chat.updatedAt,
-      sourceContact: chat.sourceContact,
-      targetContact: chat.targetContact,
+      createdBy: chat.createdBy,
+      members: chat.members,
       history: chatMessages,
     };
     return Response.json(chatHistory, {

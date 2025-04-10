@@ -2,12 +2,12 @@ import {
   IChatHistory,
   IChatInfo,
   IChatMessage,
-  IContact,
+  IUser,
 } from "@/types/global.types";
 import axios from "axios";
 
-export const getMe = async (meId: string): Promise<IContact> => {
-  const response = await axios.get<IContact>(`/api/me/${meId}`);
+export const getMe = async (meId: string): Promise<IUser> => {
+  const response = await axios.get<IUser>(`/api/me/${meId}`);
   return response.data;
 };
 

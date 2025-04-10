@@ -4,7 +4,7 @@ export interface IBase {
   updatedAt: Date | string;
 }
 
-export interface IContact extends IBase {
+export interface IUser extends IBase {
   username: string;
   name: string;
   statusInfo?: string;
@@ -12,13 +12,13 @@ export interface IContact extends IBase {
 
 export interface IChatMessage extends IBase {
   chat: IChat;
-  sourceContact: IContact;
+  createdBy: IUser;
   text: string;
 }
 
 export interface IChat extends IBase {
-  sourceContact: IContact;
-  targetContact: IContact;
+  createdBy: IUser;
+  members: IUser[];
 }
 
 export interface IChatInfo extends IChat {

@@ -32,7 +32,7 @@ export default function ActiveChatContent({
               _id={message._id}
               createdAt={message.createdAt}
               text={message.text}
-              sentByMe={me?._id === message.sourceContact._id}
+              sentByMe={me?._id === message.createdBy._id}
             />
           ))
         ) : null}

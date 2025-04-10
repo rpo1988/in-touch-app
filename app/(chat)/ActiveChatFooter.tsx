@@ -43,7 +43,7 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
     onSuccess: () => {
       reset();
       queryClient.invalidateQueries({
-        queryKey: ["chat-history"],
+        queryKey: ["chat-history", me!._id, chatId],
       });
       inputRef?.current?.focus();
     },

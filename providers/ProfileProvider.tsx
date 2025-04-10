@@ -35,7 +35,7 @@ const useInternalProfile = () => {
 
   const logout = () => {
     Cookies.remove(SS_KEY_USER_ID);
-    queryClient.setQueryData(["me"], null);
+    queryClient.cancelQueries();
     setMeId(null);
   };
 

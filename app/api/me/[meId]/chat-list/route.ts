@@ -17,33 +17,30 @@ export async function GET(
       // 1. Filtrar chats donde el usuario esté como origen
       {
         $match: {
-          sourceContact: meObjectId,
+          createdBy: meObjectId,
         },
       },
-      // 2. Poblar sourceContact
+      // 2. Poblar createdBy
       {
         $lookup: {
-          from: "contacts",
-          localField: "sourceContact",
+          from: "users",
+          localField: "createdBy",
           foreignField: "_id",
-          as: "sourceContact",
+          as: "createdBy",
         },
       },
-      // 3. Poblar targetContact
+      // 3. Poblar members
       {
         $lookup: {
-          from: "contacts",
-          localField: "targetContact",
+          from: "users",
+          localField: "members",
           foreignField: "_id",
-          as: "targetContact",
+          as: "members",
         },
       },
       // 4. Desenrollar los arrays resultantes de $lookup (porque devuelve arrays)
       {
-        $unwind: "$sourceContact",
-      },
-      {
-        $unwind: "$targetContact",
+        $unwind: "$createdBy",
       },
     ]);
     const lastChatMessages = await ChatMessageModel.aggregate<IChatMessage>([
@@ -68,13 +65,13 @@ export async function GET(
           lastMessage: { $first: "$$ROOT" },
         },
       },
-      // 4. Poblar sourceContact
+      // 4. Poblar createdBy
       {
         $lookup: {
-          from: "contacts",
-          localField: "lastMessage.sourceContact",
+          from: "users",
+          localField: "lastMessage.createdBy",
           foreignField: "_id",
-          as: "sourceContact",
+          as: "createdBy",
         },
       },
       // 4. Poblar chat
@@ -88,7 +85,7 @@ export async function GET(
       },
       // 6. Desenrollar los arrays resultantes de $lookup (porque devuelve arrays)
       {
-        $unwind: "$sourceContact",
+        $unwind: "$createdBy",
       },
       // 7. Proyectar los campos deseados
       {
@@ -96,7 +93,7 @@ export async function GET(
           createdAt: "$lastMessage.createdAt",
           updatedAt: "$lastMessage.updatedAt",
           chat: "$lastMessage.chat",
-          sourceContact: "$sourceContact",
+          createdBy: "$createdBy",
           text: "$lastMessage.text",
           _id: 0,
         },
@@ -106,8 +103,8 @@ export async function GET(
       _id: chat._id,
       createdAt: chat.createdAt,
       updatedAt: chat.updatedAt,
-      sourceContact: chat.sourceContact,
-      targetContact: chat.targetContact,
+      createdBy: chat.createdBy,
+      members: chat.members,
       lastChatMessage:
         lastChatMessages.find(
           (chatMessage) =>

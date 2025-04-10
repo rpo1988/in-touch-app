@@ -1,5 +1,5 @@
 import { ChatModel } from "@/models/chat.model";
-import { ContactModel } from "@/models/contact.model";
+import { UserModel } from "@/models/user.model";
 import { IChatMessage } from "@/types/global.types";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
@@ -11,9 +11,9 @@ const chatMessageSchema: Schema<IChatMessageModel> = new Schema({
     ref: ChatModel.modelName,
     required: true,
   },
-  sourceContact: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: ContactModel.modelName,
+    ref: UserModel.modelName,
     required: true,
   },
   text: {

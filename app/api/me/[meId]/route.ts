@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/mongodb";
-import { ContactModel } from "@/models/contact.model";
+import { UserModel } from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { meId } = await params;
     await connectToDatabase();
-    const profile = await ContactModel.findOne().where({
+    const profile = await UserModel.findOne().where({
       _id: meId,
     });
 

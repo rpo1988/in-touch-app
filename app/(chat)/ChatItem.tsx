@@ -10,17 +10,17 @@ import {
 import dayjs from "dayjs";
 
 export type ChatItemProps = {
-  contactName: string;
-  lastMessage?: string;
-  messageDate: Date | string;
+  primary: string;
+  secondary?: string;
+  third: Date | string;
   selected?: boolean;
   onSelected: () => void;
 };
 
 export default function ChatItem({
-  contactName,
-  lastMessage,
-  messageDate,
+  primary,
+  secondary,
+  third,
   selected,
   onSelected,
 }: ChatItemProps) {
@@ -38,7 +38,8 @@ export default function ChatItem({
             <Person />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={contactName} secondary={lastMessage} />
+        {/* TODO: Control when there is more than 1 member (groups) */}
+        <ListItemText primary={primary} secondary={secondary} />
       </ListItemButton>
       <Typography
         component="span"
@@ -49,10 +50,11 @@ export default function ChatItem({
           top: 8,
           right: 16,
           fontSize: 12,
+          pointerEvents: "none",
         }}
       >
         {/* TODO: Pending format date according to proximity */}
-        {dayjs(messageDate).format("DD/MM/YYYY")}
+        {dayjs(third).format("DD/MM/YYYY")}
       </Typography>
     </ListItem>
   );
