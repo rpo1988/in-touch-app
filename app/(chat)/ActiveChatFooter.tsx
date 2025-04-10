@@ -19,9 +19,13 @@ interface FormValue {
 
 interface ActiveChatFooterProps {
   chatId: string;
+  onMessageSent: () => void;
 }
 
-export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
+export default function ActiveChatFooter({
+  chatId,
+  onMessageSent,
+}: ActiveChatFooterProps) {
   const queryClient = useQueryClient();
   const { me } = useMe();
   const {
@@ -40,12 +44,15 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
 
   const addMutation = useMutation({
     mutationFn: (text: string) => sendMessage(me!._id, chatId, text),
-    onSuccess: () => {
+    onSuccess: async () => {
       reset();
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["chat-history", me!._id, chatId],
       });
-      inputRef?.current?.focus();
+      await queryClient.invalidateQueries({
+        queryKey: ["chat-list", me!._id],
+      });
+      onMessageSent();
     },
     onError: (error) => {
       console.error(error);
@@ -59,8 +66,9 @@ export default function ActiveChatFooter({ chatId }: ActiveChatFooterProps) {
   };
 
   useEffect(() => {
+    if (addMutation.isPending) return;
     inputRef?.current?.focus();
-  }, []);
+  }, [addMutation.isPending]);
 
   return (
     <>

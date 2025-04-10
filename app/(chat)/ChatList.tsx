@@ -18,7 +18,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     error,
   } = useQuery({
     enabled: !!me?._id,
-    queryKey: ["chat-list", me?._id],
+    queryKey: ["chat-list", me!._id],
     queryFn: () => getChatList(me!._id),
   });
 

@@ -39,7 +39,22 @@ export default function ChatItem({
           </Avatar>
         </ListItemAvatar>
         {/* TODO: Control when there is more than 1 member (groups) */}
-        <ListItemText primary={primary} secondary={secondary} />
+        <ListItemText
+          primary={primary}
+          secondary={secondary}
+          slotProps={{
+            primary: {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            },
+            secondary: {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            },
+          }}
+        />
       </ListItemButton>
       <Typography
         component="span"
