@@ -8,6 +8,7 @@ export interface IUser extends IBase {
   username: string;
   name: string;
   statusInfo?: string;
+  contacts: IUser[];
 }
 
 export interface IChatMessage extends IBase {
@@ -34,4 +35,9 @@ export interface IChatHistory extends IChat {
 
 export interface ApiError {
   message: string;
+}
+
+export interface IUserContact extends IBase {
+  user: IUser;
+  contacts: IUser[];
 }

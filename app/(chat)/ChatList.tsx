@@ -1,9 +1,9 @@
 import ChatItem from "@/app/(chat)/ChatItem";
 import ChatListHeader from "@/app/(chat)/ChatListHeader";
 import { useMe } from "@/providers/ProfileProvider";
-import { getChatList } from "@/services/chat.service";
+import { createChat, getChatList } from "@/services/chat.service";
 import { CircularProgress, List } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type ChatListProps = {
   selectedId?: string;
@@ -12,6 +12,7 @@ type ChatListProps = {
 
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const { me } = useMe();
+  const queryClient = useQueryClient();
   const {
     data: chatList = [],
     isLoading,
@@ -21,6 +22,31 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     queryKey: ["chat-list", me!._id],
     queryFn: () => getChatList(me!._id),
   });
+  const createChatMutation = useMutation({
+    mutationFn: (contactId: string) => createChat(me!._id, contactId),
+    onSuccess: async (newChat) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["chat-list", me!._id],
+      });
+      onSelected(newChat._id);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleContactSelected = (contactId: string) => {
+    const currentChat = chatList.find((chat) =>
+      chat.members.some((member) => member._id === contactId)
+    );
+    if (!!currentChat) {
+      // Contact chat already created, so open it
+      onSelected(currentChat._id);
+    } else {
+      // New contact chat, so create it and open it
+      createChatMutation.mutate(contactId);
+    }
+  };
 
   if (isLoading)
     return (
@@ -32,14 +58,14 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
 
   return (
     <div className="w-full flex flex-col">
-      <ChatListHeader />
+      <ChatListHeader onContactSelected={handleContactSelected} />
       <List className="w-full">
         {chatList.map((item) => (
           <ChatItem
             key={item._id}
             primary={item.title!}
             secondary={item.lastChatMessage?.text}
-            third={item.createdAt}
+            third={item.lastChatMessage?.createdAt || item.createdAt}
             selected={item._id === selectedId}
             onSelected={() => onSelected(item._id)}
           />

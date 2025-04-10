@@ -11,7 +11,7 @@ export default withProfile(function ChatPage() {
 
   return (
     <div className="w-full h-full flex flex-row">
-      <div className="w-1/3 min-w-[250px] flex flex-row">
+      <div className="w-[33vw] min-w-[300px] flex flex-row">
         <ChatList
           selectedId={selectedChat}
           onSelected={(id) => setSelectedChat(id)}

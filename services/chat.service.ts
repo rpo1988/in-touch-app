@@ -1,15 +1,10 @@
 import {
+  IChat,
   IChatHistory,
   IChatInfo,
   IChatMessage,
-  IUser,
 } from "@/types/global.types";
 import axios from "axios";
-
-export const getMe = async (meId: string): Promise<IUser> => {
-  const response = await axios.get<IUser>(`/api/me/${meId}`);
-  return response.data;
-};
 
 export const getChatList = async (meId: string): Promise<IChatInfo[]> => {
   const response = await axios.get<IChatInfo[]>(`/api/me/${meId}/chat-list`);
@@ -52,5 +47,16 @@ export const sendMessage = async (
     `/api/me/${meId}/chat-history/${chatId}`,
     body
   );
+  return response.data;
+};
+
+export const createChat = async (
+  meId: string,
+  contactId: string
+): Promise<IChat> => {
+  const body = {
+    contactId,
+  };
+  const response = await axios.post<IChat>(`/api/me/${meId}/chat-list`, body);
   return response.data;
 };

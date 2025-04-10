@@ -1,7 +1,7 @@
 "use client";
 
 import { signin } from "@/services/auth.service";
-import { getMe } from "@/services/chat.service";
+import { getMe } from "@/services/user.service";
 import { CircularProgress } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
