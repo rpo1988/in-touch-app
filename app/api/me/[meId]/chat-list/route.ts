@@ -17,7 +17,16 @@ export async function GET(
       // 1. Filtrar chats donde el usuario esté como origen
       {
         $match: {
-          createdBy: meObjectId,
+          $or: [
+            {
+              createdBy: meObjectId,
+            },
+            {
+              members: {
+                $in: [meObjectId],
+              },
+            },
+          ],
         },
       },
       // 2. Poblar createdBy

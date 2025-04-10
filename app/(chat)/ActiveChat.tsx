@@ -28,8 +28,8 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
     <div className="w-full h-full flex flex-col">
       {!!chatHistory && (
         <ActiveChatHeader
-          title={chatHistory.members[0].name}
-          subtitle={chatHistory.members[0].statusInfo}
+          title={chatHistory.title!}
+          subtitle={chatHistory.description}
         />
       )}
       <ActiveChatContent data={chatHistory?.history} isLoading={isLoading} />

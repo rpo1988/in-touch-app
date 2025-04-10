@@ -22,10 +22,13 @@ export interface IChat extends IBase {
 }
 
 export interface IChatInfo extends IChat {
+  title?: string;
   lastChatMessage: IChatMessage | null;
 }
 
 export interface IChatHistory extends IChat {
+  title?: string;
+  description?: string;
   history: IChatMessage[];
 }
 

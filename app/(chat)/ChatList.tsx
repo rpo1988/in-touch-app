@@ -37,7 +37,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         {chatList.map((item) => (
           <ChatItem
             key={item._id}
-            primary={item.members[0].name}
+            primary={item.title!}
             secondary={item.lastChatMessage?.text}
             third={item.createdAt}
             selected={item._id === selectedId}

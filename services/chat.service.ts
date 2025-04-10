@@ -13,7 +13,12 @@ export const getMe = async (meId: string): Promise<IUser> => {
 
 export const getChatList = async (meId: string): Promise<IChatInfo[]> => {
   const response = await axios.get<IChatInfo[]>(`/api/me/${meId}/chat-list`);
-  return response.data;
+  const enhancedResponse = response.data.map((chat) => ({
+    ...chat,
+    title:
+      meId === chat.createdBy._id ? chat.members[0].name : chat.createdBy.name,
+  }));
+  return enhancedResponse;
 };
 
 export const getChatHistory = async (
@@ -23,7 +28,16 @@ export const getChatHistory = async (
   const response = await axios.get<IChatHistory>(
     `/api/me/${meId}/chat-history/${chatId}`
   );
-  return response.data;
+  const targetUser =
+    meId === response.data.createdBy._id
+      ? response.data.members[0]
+      : response.data.createdBy;
+  const enhancedResponse = {
+    ...response.data,
+    title: targetUser.name,
+    description: targetUser.statusInfo,
+  };
+  return enhancedResponse;
 };
 
 export const sendMessage = async (
