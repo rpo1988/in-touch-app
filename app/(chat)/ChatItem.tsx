@@ -1,3 +1,4 @@
+import { formatedDateMessage } from "@/utils/date";
 import { Person } from "@mui/icons-material";
 import {
   Avatar,
@@ -7,7 +8,6 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
 
 export type ChatItemProps = {
   primary: string;
@@ -68,8 +68,7 @@ export default function ChatItem({
           pointerEvents: "none",
         }}
       >
-        {/* TODO: Pending format date according to proximity */}
-        {dayjs(third).format("DD/MM/YYYY")}
+        {formatedDateMessage(third)}
       </Typography>
     </ListItem>
   );

@@ -1,9 +1,11 @@
+import ChatDateMessage from "@/app/(chat)/ChatDateMessage";
 import ChatMessage from "@/app/(chat)/ChatMessage";
 import { useMe } from "@/providers/ProfileProvider";
 import { IChatMessage } from "@/types/global.types";
 import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
-import { RefObject } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { RefObject, useCallback, useMemo } from "react";
 
 export const lastIdRef = "chat-message-last";
 
@@ -20,13 +22,41 @@ export default function ActiveChatContent({
 }: ActiveChatContentProps) {
   const { me } = useMe();
 
-  const setMessageRef = (messageId: string) => (el: HTMLDivElement | null) => {
-    if (el) {
-      messageRefs.current.set(messageId, el);
-    } else {
-      messageRefs.current.delete(messageId);
-    }
-  };
+  const setMessageRef = useCallback(
+    (id: string) => (el: HTMLDivElement | null) => {
+      if (el) {
+        messageRefs.current.set(id, el);
+      } else {
+        messageRefs.current.delete(id);
+      }
+    },
+    [messageRefs]
+  );
+
+  const allTypeOfMessages = useMemo(() => {
+    let previousDate: Dayjs;
+    const allMessages = (data || []).reduce((acc, message) => {
+      const nextDate = dayjs(message.createdAt);
+      if (!previousDate || !previousDate.isSame(nextDate, "day")) {
+        acc.push(
+          <ChatDateMessage key={nextDate.toString()} date={message.createdAt} />
+        );
+        previousDate = nextDate;
+      }
+      acc.push(
+        <ChatMessage
+          key={message._id}
+          ref={setMessageRef(message._id)}
+          _id={message._id}
+          createdAt={message.createdAt}
+          text={message.text}
+          sentByMe={me!._id === message.createdBy._id}
+        />
+      );
+      return acc;
+    }, [] as React.ReactNode[]);
+    return allMessages;
+  }, [me, data, setMessageRef]);
 
   return (
     <>
@@ -36,20 +66,7 @@ export default function ActiveChatContent({
           "justify-center": isLoading,
         })}
       >
-        {isLoading ? (
-          <CircularProgress />
-        ) : !!data ? (
-          data.map((message) => (
-            <ChatMessage
-              ref={setMessageRef(message._id)}
-              key={message._id}
-              _id={message._id}
-              createdAt={message.createdAt}
-              text={message.text}
-              sentByMe={me!._id === message.createdBy._id}
-            />
-          ))
-        ) : null}
+        {isLoading ? <CircularProgress /> : !!data ? allTypeOfMessages : null}
         <div ref={setMessageRef(lastIdRef)}>{/* DO NOT REMOVE IT */}</div>
       </div>
     </>
