@@ -1,20 +1,76 @@
-import { IChatMessage, IChatMessageStatus } from "@/types/global.types";
-import { Check, Schedule } from "@mui/icons-material";
-import { Paper, Typography } from "@mui/material";
+import { useMe } from "@/providers/ProfileProvider";
+import { deleteMessage } from "@/services/chat.service";
+import {
+  IChatHistory,
+  IChatMessage,
+  IChatMessageStatus,
+} from "@/types/global.types";
+import { Check, MoreVert, Schedule } from "@mui/icons-material";
+import { IconButton, Menu, MenuItem, Paper, Typography } from "@mui/material";
 import { green } from "@mui/material/colors";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 
-type ChatMessageProps = Pick<
-  IChatMessage,
-  "_id" | "createdAt" | "text" | "status"
-> & {
+type ChatMessageProps = {
+  chatMessage: IChatMessage;
   sentByMe: boolean;
 };
 
 export default forwardRef<HTMLDivElement, ChatMessageProps>(
-  function ChatMessage({ createdAt, text, sentByMe, status }, ref) {
+  function ChatMessage(
+    {
+      chatMessage: {
+        createdAt,
+        text,
+        status,
+        chat: { _id: chatId },
+        _id,
+      },
+      sentByMe,
+    },
+    ref
+  ) {
+    const queryClient = useQueryClient();
+    const { me } = useMe();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const deleteMessageMutation = useMutation({
+      mutationFn: () => deleteMessage(me!._id, chatId, _id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["chat-history", me!._id, chatId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["chat-list", me!._id],
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+
+    const handleMoreOptions =
+      (open: boolean) => (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(open ? event.currentTarget : null);
+      };
+
+    const handleDelete = async () => {
+      setAnchorEl(null);
+      await queryClient.setQueryData(
+        ["chat-history", me!._id, chatId],
+        (currentValue: IChatHistory) => {
+          const newValue: IChatHistory = {
+            ...currentValue,
+            history: currentValue.history.filter((msg) => msg._id !== _id),
+          };
+          return newValue;
+        }
+      );
+      deleteMessageMutation.mutate();
+    };
+
     return (
       <>
         <Paper
@@ -22,8 +78,11 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
           ref={ref}
           sx={{
             bgcolor: sentByMe ? green["A100"] : "fff",
+            ":hover #more-message-options": {
+              opacity: 1,
+            },
           }}
-          className={clsx("flex flex-col mx-4 my-1 p-2", {
+          className={clsx("relative flex flex-col mx-4 my-1 p-2", {
             "self-end": sentByMe,
             "self-start": !sentByMe,
           })}
@@ -54,6 +113,43 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
               />
             )}
           </div>
+
+          {sentByMe && (
+            <>
+              {/* More Options */}
+              <IconButton
+                id="more-message-options"
+                size="small"
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  opacity: 0,
+                  transition: "opacity 0.2s",
+                  background:
+                    "radial-gradient(circle, rgb(185 246 202) 20%, transparent 100%)",
+                }}
+                onClick={handleMoreOptions(true)}
+              >
+                <MoreVert fontSize="small" />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={!!anchorEl}
+                onClose={handleMoreOptions(false)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+              </Menu>
+            </>
+          )}
         </Paper>
       </>
     );

@@ -44,8 +44,19 @@ export const sendMessage = async (
     text,
   };
   const response = await axios.post<IChatMessage>(
-    `/api/me/${meId}/chat-history/${chatId}`,
+    `/api/me/${meId}/chat-history/${chatId}/messages`,
     body
+  );
+  return response.data;
+};
+
+export const deleteMessage = async (
+  meId: string,
+  chatId: string,
+  chatMessageId: string
+): Promise<IChatMessage> => {
+  const response = await axios.delete<IChatMessage>(
+    `/api/me/${meId}/chat-history/${chatId}/messages/${chatMessageId}`
   );
   return response.data;
 };

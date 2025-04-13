@@ -41,7 +41,7 @@ export default function ActiveChatFooter({
   const text = watch("text");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const addMutation = useMutation({
+  const sendMessageMutation = useMutation({
     mutationFn: (text: string) => sendMessage(me!._id, chatId, text),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -83,7 +83,7 @@ export default function ActiveChatFooter({
         return newValue;
       }
     );
-    addMutation.mutate(formValue.text);
+    sendMessageMutation.mutate(formValue.text);
     reset();
     setTimeout(() => {
       onMessageSent();
@@ -91,9 +91,9 @@ export default function ActiveChatFooter({
   };
 
   useEffect(() => {
-    if (addMutation.isPending) return;
+    if (sendMessageMutation.isPending) return;
     inputRef?.current?.focus();
-  }, [addMutation.isPending]);
+  }, [sendMessageMutation.isPending]);
 
   return (
     <>

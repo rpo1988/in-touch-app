@@ -13,7 +13,7 @@ export async function GET(
       .where({
         user: meId,
       })
-      .populate("user")
+      .populate("user", "_id")
       .populate("contacts");
     return NextResponse.json(userContact, { status: 200 });
   } catch (error) {

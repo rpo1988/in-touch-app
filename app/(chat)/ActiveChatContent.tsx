@@ -47,11 +47,8 @@ export default function ActiveChatContent({
         <ChatMessage
           key={message._id}
           ref={setMessageRef(message._id)}
-          _id={message._id}
-          createdAt={message.createdAt}
-          text={message.text}
+          chatMessage={message}
           sentByMe={me!._id === message.createdBy._id}
-          status={message.status}
         />
       );
       return acc;
