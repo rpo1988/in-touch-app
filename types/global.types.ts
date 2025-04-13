@@ -11,10 +11,16 @@ export interface IUser extends IBase {
   contacts: IUser[];
 }
 
+export enum IChatMessageStatus {
+  Sending = 0,
+  Received = 1,
+}
+
 export interface IChatMessage extends IBase {
   chat: IChat;
   createdBy: IUser;
   text: string;
+  status: IChatMessageStatus;
 }
 
 export interface IChat extends IBase {

@@ -1,7 +1,7 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { ChatMessageModel } from "@/models/chat-message.model";
 import { ChatModel } from "@/models/chat.model";
-import { IChatHistory } from "@/types/global.types";
+import { IChatHistory, IChatMessageStatus } from "@/types/global.types";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 
@@ -56,6 +56,7 @@ export async function POST(
       chat: chatObjectId,
       createdBy: meObjectId,
       text,
+      status: IChatMessageStatus.Received,
     });
     return Response.json(newChatMessage, {
       status: 201,

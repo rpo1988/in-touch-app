@@ -51,6 +51,7 @@ export default function ActiveChatContent({
           createdAt={message.createdAt}
           text={message.text}
           sentByMe={me!._id === message.createdBy._id}
+          status={message.status}
         />
       );
       return acc;

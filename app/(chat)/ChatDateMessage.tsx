@@ -18,9 +18,7 @@ export default forwardRef<HTMLDivElement, ChatDateMessageProps>(
           sx={{
             bgcolor: grey["50"],
           }}
-          className={clsx(
-            "sticky top-1 flex flex-col mx-4 my-1 p-2 self-center"
-          )}
+          className={clsx("flex flex-col mx-4 my-1 p-2 self-center")}
         >
           <Typography variant="body1" fontSize={12}>
             {formatedDateMessage(date, "uppercase")}

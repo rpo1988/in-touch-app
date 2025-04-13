@@ -21,6 +21,10 @@ const chatMessageSchema: Schema<IChatMessageModel> = new Schema(
       type: String,
       required: true,
     },
+    status: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
