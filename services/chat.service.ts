@@ -71,3 +71,13 @@ export const createChat = async (
   const response = await axios.post<IChat>(`/api/me/${meId}/chat-list`, body);
   return response.data;
 };
+
+export const deleteChat = async (
+  meId: string,
+  chatId: string
+): Promise<IChatMessage> => {
+  const response = await axios.delete<IChatMessage>(
+    `/api/me/${meId}/chat-list/${chatId}`
+  );
+  return response.data;
+};

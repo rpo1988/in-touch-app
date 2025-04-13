@@ -1,13 +1,14 @@
 import ChatItem from "@/app/(chat)/ChatItem";
 import ChatListHeader from "@/app/(chat)/ChatListHeader";
 import { useMe } from "@/providers/ProfileProvider";
-import { createChat, getChatList } from "@/services/chat.service";
+import { createChat, deleteChat, getChatList } from "@/services/chat.service";
+import { IChat } from "@/types/global.types";
 import { CircularProgress, List } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type ChatListProps = {
   selectedId?: string;
-  onSelected: (id: string) => void;
+  onSelected: (id?: string) => void;
 };
 
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
@@ -25,10 +26,22 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const createChatMutation = useMutation({
     mutationFn: (contactId: string) => createChat(me!._id, contactId),
     onSuccess: async (newChat) => {
-      await queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["chat-list", me!._id],
       });
       onSelected(newChat._id);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+  const deleteChatMutation = useMutation({
+    mutationFn: (chatId: string) => deleteChat(me!._id, chatId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chat-list", me!._id],
+      });
+      onSelected();
     },
     onError: (error) => {
       console.error(error);
@@ -46,6 +59,15 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
       // New contact chat, so create it and open it
       createChatMutation.mutate(contactId);
     }
+  };
+
+  const handleDelete = (chatId: string) => async () => {
+    await queryClient.setQueryData(
+      ["chat-list", me!._id],
+      (currentValue: IChat[]) =>
+        currentValue.filter((chat) => chat._id !== chatId)
+    );
+    deleteChatMutation.mutate(chatId);
   };
 
   if (isLoading)
@@ -68,6 +90,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
             third={item.lastChatMessage?.createdAt || item.createdAt}
             selected={item._id === selectedId}
             onSelected={() => onSelected(item._id)}
+            onDelete={handleDelete(item._id)}
           />
         ))}
       </List>
