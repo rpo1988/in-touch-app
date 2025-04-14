@@ -1,9 +1,9 @@
 "use client";
 
-import { SEARCH_PARAM_USERNAME } from "@/app/register/page";
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
-import { ApiError } from "@/types/global.types";
+import { signup } from "@/services/auth.service";
+import { ApiError, IUser } from "@/types/global.types";
 import {
   Box,
   Button,
@@ -16,42 +16,45 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+export const SEARCH_PARAM_USERNAME = "username";
+
 interface FormValue {
   username: string;
+  name: string;
+  statusInfo?: string;
 }
 
 export default withoutProfile(function LoginPage() {
-  const [initialized, setInitialized] = useState(false);
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const { me, login } = useMe();
+  const { me } = useMe();
   const { replace } = useRouter();
   const {
     control,
     formState: { isValid },
-    setValue,
     handleSubmit,
   } = useForm<FormValue>({
     defaultValues: {
       username: "",
+      name: "",
+      statusInfo: "",
     },
   });
-  const loginMutation = useMutation<void, AxiosError<ApiError>, string>({
-    mutationFn: (username: string) => login(username),
+  const registerMutation = useMutation<IUser, AxiosError<ApiError>, FormValue>({
+    mutationFn: (body) => signup(body),
   });
-  const inputRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
 
   const onSubmit = async (formValue: FormValue) => {
     if (!isValid) return;
 
     try {
       setIsLoading(true);
-      await loginMutation.mutateAsync(formValue.username);
-      replace("/");
+      await registerMutation.mutateAsync(formValue);
+      replace(`/login?${SEARCH_PARAM_USERNAME}=${formValue.username}`);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -59,18 +62,8 @@ export default withoutProfile(function LoginPage() {
   };
 
   useEffect(() => {
-    if (initialized) return;
-
-    setInitialized(true);
-    const username = searchParams.get(SEARCH_PARAM_USERNAME);
-    if (!username) return;
-
-    setValue("username", username);
-  }, [initialized, searchParams, setValue]);
-
-  useEffect(() => {
     if (isLoading) return;
-    inputRef?.current?.focus();
+    usernameRef?.current?.focus();
   }, [isLoading]);
 
   useEffect(() => {
@@ -89,7 +82,7 @@ export default withoutProfile(function LoginPage() {
         }}
       >
         <Typography variant="h4" component="h1" className="text-center">
-          Log in
+          Register
         </Typography>
 
         <form
@@ -111,15 +104,52 @@ export default withoutProfile(function LoginPage() {
                 variant="outlined"
                 size="small"
                 autoComplete="off"
-                error={loginMutation.isError || !!fieldState.error}
+                error={registerMutation.isError || !!fieldState.error}
                 helperText={
-                  loginMutation.error?.response?.data.message ||
+                  registerMutation.error?.response?.data.message ||
                   fieldState.error?.message
                 }
-                inputRef={inputRef}
+                inputRef={usernameRef}
               />
             )}
           />
+          <Controller
+            name="name"
+            control={control}
+            rules={{ required: "This field is required." }}
+            disabled={isLoading}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Name"
+                placeholder="Type your name"
+                variant="outlined"
+                size="small"
+                autoComplete="off"
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
+          />
+          <Controller
+            name="statusInfo"
+            control={control}
+            disabled={isLoading}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Status Info"
+                placeholder="Type your status info for others to see it"
+                variant="outlined"
+                multiline
+                rows={4}
+                autoComplete="off"
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
+          />
+
           <Button
             type="submit"
             size="medium"
@@ -134,14 +164,14 @@ export default withoutProfile(function LoginPage() {
           </Button>
         </form>
 
-        <Link href="/register" passHref legacyBehavior>
+        <Link href="/login" passHref legacyBehavior>
           <MtLink
             underline="hover"
             sx={{
               marginTop: 2,
             }}
           >
-            Register
+            Login
           </MtLink>
         </Link>
       </Paper>

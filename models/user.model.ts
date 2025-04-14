@@ -5,7 +5,7 @@ type IUserModel = IUser & Document;
 
 const userSchema: Schema<IUserModel> = new Schema(
   {
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     statusInfo: { type: String, default: "" },
   },
