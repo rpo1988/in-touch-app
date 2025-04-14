@@ -66,13 +66,13 @@ export default withoutProfile(function LoginPage() {
   return (
     <Box className="w-full h-full flex items-center justify-center p-4">
       <Paper
-        className="w-full max-w-[400px] flex flex-col gap-8 p-10"
+        className="w-full max-w-[300px] flex flex-col gap-8 p-10"
         variant="outlined"
         sx={{
           borderRadius: 2,
         }}
       >
-        <Typography variant="h3" component="h1" className="text-center">
+        <Typography variant="h4" component="h1" className="text-center">
           Log in
         </Typography>
 

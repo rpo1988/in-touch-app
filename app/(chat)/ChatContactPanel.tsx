@@ -1,17 +1,9 @@
 "use client";
 
-import ChatContactItem from "@/app/(chat)/ChatContactItem";
-import { useMe } from "@/providers/ProfileProvider";
-import { getContacts } from "@/services/user.service";
-import {
-  CircularProgress,
-  Divider,
-  Drawer,
-  List,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import ChatContactList from "@/app/(chat)/ChatContactList";
+import ChatContactNew from "@/app/(chat)/ChatContactNew";
+import { Drawer } from "@mui/material";
+import { useState } from "react";
 
 interface ChatContactPanelProps {
   open: boolean;
@@ -24,44 +16,29 @@ export default function ChatContactPanel({
   onClose,
   onSelected,
 }: ChatContactPanelProps) {
-  const { me } = useMe();
-  const {
-    data: contacts = [],
-    isLoading,
-    error,
-  } = useQuery({
-    enabled: !!me?._id,
-    queryKey: ["contacts", me!._id],
-    queryFn: () => getContacts(me!._id),
-  });
+  const [showNewContactView, setShowNewContactView] = useState(false);
+
+  const handleClose = () => {
+    setShowNewContactView(false);
+    onClose();
+  };
 
   return (
     <>
-      <Drawer anchor="left" open={open} onClose={onClose}>
+      <Drawer anchor="left" open={open} onClose={handleClose}>
         <div className="w-[33vw] min-w-[300px]">
-          <Toolbar className="flex flex-row justify-between">
-            <Typography variant="h6" noWrap component="div">
-              Contacts
-            </Typography>
-          </Toolbar>
-          <Divider />
-          {error ? (
-            <div className="p-4">Error loading contacts</div>
-          ) : isLoading ? (
-            <div className="w-full p-4 flex items-center justify-center">
-              <CircularProgress />
-            </div>
+          {showNewContactView ? (
+            <ChatContactNew
+              onCreated={onSelected}
+              onClose={() => setShowNewContactView(false)}
+            />
           ) : (
-            <List>
-              {contacts.map((contact) => (
-                <ChatContactItem
-                  key={contact._id}
-                  primary={contact.name}
-                  secondary={contact.statusInfo}
-                  onSelected={() => onSelected(contact._id)}
-                />
-              ))}
-            </List>
+            <ChatContactList
+              open={open}
+              onClose={handleClose}
+              onSelected={onSelected}
+              onNewContact={() => setShowNewContactView(true)}
+            />
           )}
         </div>
       </Drawer>
