@@ -23,6 +23,7 @@ export default function ActiveChatHeader({
         component="div"
         sx={{
           height: "64px",
+          minHeight: "64px",
           maxHeight: "64px",
           bgcolor: grey[100],
         }}

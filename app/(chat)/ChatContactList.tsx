@@ -76,6 +76,15 @@ export default function ChatContactList({
         <div className="w-full p-4 flex items-center justify-center">
           <CircularProgress />
         </div>
+      ) : !contacts.length ? (
+        <div className="mt-8 px-4 flex justify-center">
+          <Info
+            title={transform("No Contacts Yet", "titlecase")}
+            description="It looks like you don't have any contacts yet. Add some contacts to start chatting!"
+            actionText="Add contact"
+            onActionClick={() => onNewContact()}
+          />
+        </div>
       ) : (
         <>
           <ChatContactListSearcher onTextSubmitted={handleSearchContact} />
@@ -83,8 +92,8 @@ export default function ChatContactList({
           {!filteredContacts.length && (
             <div className="mt-8 px-4 flex justify-center">
               <Info
-                title={transform("Contact not Found", "titlecase")}
-                description="It seems that you don't have this contact yet. Add it to start a conversation with this person."
+                title={transform("Contact Not Found", "titlecase")}
+                description="It looks like you don't have this contact yet. Add it to start chatting with!"
                 actionText="Add contact"
                 onActionClick={() => onNewContact()}
               />

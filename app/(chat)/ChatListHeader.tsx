@@ -1,35 +1,21 @@
 "use client";
 
-import ChatContactPanel from "@/app/(chat)/ChatContactPanel";
 import { useMe } from "@/providers/ProfileProvider";
 import { Add, Logout } from "@mui/icons-material";
 import { Divider, IconButton, Toolbar, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 interface ChatListHeaderProps {
-  onContactSelected: (contactId: string) => void;
+  onAddClick: () => void;
 }
 
-export default function ChatListHeader({
-  onContactSelected,
-}: ChatListHeaderProps) {
-  const [showAddMenu, setShowAddMenu] = useState(false);
+export default function ChatListHeader({ onAddClick }: ChatListHeaderProps) {
   const { logout } = useMe();
   const { replace } = useRouter();
-
-  const toggleAddMenu = () => {
-    setShowAddMenu((value) => !value);
-  };
 
   const handleLogout = () => {
     logout();
     replace("/login");
-  };
-
-  const handleSelected = (contactId: string) => {
-    toggleAddMenu();
-    onContactSelected(contactId);
   };
 
   return (
@@ -39,7 +25,7 @@ export default function ChatListHeader({
           Chats
         </Typography>
         <div>
-          <IconButton onClick={toggleAddMenu}>
+          <IconButton onClick={onAddClick}>
             <Add />
           </IconButton>
           <IconButton onClick={handleLogout}>
@@ -48,11 +34,6 @@ export default function ChatListHeader({
         </div>
       </Toolbar>
       <Divider />
-      <ChatContactPanel
-        open={showAddMenu}
-        onClose={toggleAddMenu}
-        onSelected={handleSelected}
-      />
     </>
   );
 }

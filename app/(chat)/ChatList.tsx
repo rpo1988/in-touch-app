@@ -1,10 +1,14 @@
+import ChatContactPanel from "@/app/(chat)/ChatContactPanel";
 import ChatItem from "@/app/(chat)/ChatItem";
 import ChatListHeader from "@/app/(chat)/ChatListHeader";
+import Info from "@/app/(chat)/Info";
 import { useMe } from "@/providers/ProfileProvider";
 import { createChat, deleteChat, getChatList } from "@/services/chat.service";
 import { IChat } from "@/types/global.types";
+import { transform } from "@/utils/text";
 import { CircularProgress, List } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 type ChatListProps = {
   selectedId?: string;
@@ -13,6 +17,7 @@ type ChatListProps = {
 
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const { me } = useMe();
+  const [openContactPanel, setOpenContactPanel] = useState(false);
   const queryClient = useQueryClient();
   const {
     data: chatList = [],
@@ -70,6 +75,15 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     deleteChatMutation.mutate(chatId);
   };
 
+  const toggleContactPanel = () => {
+    setOpenContactPanel((value) => !value);
+  };
+
+  const handleSelected = (contactId: string) => {
+    toggleContactPanel();
+    handleContactSelected(contactId);
+  };
+
   if (isLoading)
     return (
       <div className="w-full p-4 flex items-center justify-center">
@@ -80,20 +94,38 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
 
   return (
     <div className="w-full flex flex-col">
-      <ChatListHeader onContactSelected={handleContactSelected} />
+      <ChatListHeader onAddClick={toggleContactPanel} />
+
       <List className="w-full">
-        {chatList.map((item) => (
-          <ChatItem
-            key={item._id}
-            primary={item.title!}
-            secondary={item.lastChatMessage?.text}
-            third={item.lastChatMessage?.createdAt || item.createdAt}
-            selected={item._id === selectedId}
-            onSelected={() => onSelected(item._id)}
-            onDelete={handleDelete(item._id)}
-          />
-        ))}
+        {!chatList.length ? (
+          <div className="mt-8 px-4 flex justify-center">
+            <Info
+              title={transform("No Chats Yet", "titlecase")}
+              description="Haven't you started chatting yet? Choose a contact from your contact list and have fun!"
+              actionText="Check my contacts"
+              onActionClick={toggleContactPanel}
+            />
+          </div>
+        ) : (
+          chatList.map((item) => (
+            <ChatItem
+              key={item._id}
+              primary={item.title!}
+              secondary={item.lastChatMessage?.text}
+              third={item.lastChatMessage?.createdAt || item.createdAt}
+              selected={item._id === selectedId}
+              onSelected={() => onSelected(item._id)}
+              onDelete={handleDelete(item._id)}
+            />
+          ))
+        )}
       </List>
+
+      <ChatContactPanel
+        open={openContactPanel}
+        onClose={toggleContactPanel}
+        onSelected={handleSelected}
+      />
     </div>
   );
 }
