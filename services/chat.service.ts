@@ -1,10 +1,10 @@
 import api from "@/lib/axios";
 import {
+  Chat,
   ChatList,
   ChatListItem,
   ChatMessage,
   IChat,
-  IChatMessage,
 } from "@/types/global.types";
 import axios from "axios";
 
@@ -37,7 +37,7 @@ export const sendMessage = async (
 export const deleteMessage = async (
   chatId: string,
   chatMessageId: string
-): Promise<ChatMessage> => {
+): Promise<Pick<ChatMessage, "id">> => {
   const response = await api.delete<ChatMessage>(
     `/chat-list/${chatId}/messages/${chatMessageId}`
   );
@@ -55,12 +55,7 @@ export const createChat = async (
   return response.data;
 };
 
-export const deleteChat = async (
-  meId: string,
-  chatId: string
-): Promise<IChatMessage> => {
-  const response = await axios.delete<IChatMessage>(
-    `/api/me/${meId}/chat-list/${chatId}`
-  );
+export const deleteChat = async (chatId: string): Promise<Pick<Chat, "id">> => {
+  const response = await api.delete<Chat>(`/chat-list/${chatId}`);
   return response.data;
 };

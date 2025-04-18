@@ -45,7 +45,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     },
   });
   const deleteChatMutation = useMutation({
-    mutationFn: (chatId: string) => deleteChat(me!.id, chatId),
+    mutationFn: deleteChat,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["chat-list", me!.id],
