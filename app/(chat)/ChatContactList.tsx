@@ -22,14 +22,12 @@ interface ChatContactListProps {
   open: boolean;
   onClose: () => void;
   onSelected: (contactId: string) => void;
-  onNewContact: () => void;
 }
 
 export default function ChatContactList({
   open,
   onClose,
   onSelected,
-  onNewContact,
 }: ChatContactListProps) {
   const { me } = useMe();
   const [contactSearchText, setContactSearchText] = useState<string>();
@@ -78,10 +76,8 @@ export default function ChatContactList({
       ) : !contacts.length ? (
         <div className="mt-8 px-4 flex justify-center">
           <Info
-            title={transform("No Contacts Yet", "titlecase")}
-            description="It looks like you don't have any contacts yet. Add some contacts to start chatting!"
-            actionText="Add contact"
-            onActionClick={() => onNewContact()}
+            title={transform("No More Contacts", "titlecase")}
+            description="It looks like there are no more contacts to add."
           />
         </div>
       ) : (
@@ -92,9 +88,7 @@ export default function ChatContactList({
             <div className="mt-8 px-4 flex justify-center">
               <Info
                 title={transform("Contact Not Found", "titlecase")}
-                description="It looks like you don't have this contact yet. Add it to start chatting with!"
-                actionText="Add contact"
-                onActionClick={() => onNewContact()}
+                description="It looks like this contact has not been registered yet. Please check your spelling to make sure it is correct or let them know so they can sign up and start chatting."
               />
             </div>
           )}
