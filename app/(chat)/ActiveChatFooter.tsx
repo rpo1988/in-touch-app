@@ -42,13 +42,13 @@ export default function ActiveChatFooter({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sendMessageMutation = useMutation({
-    mutationFn: (text: string) => sendMessage(me!._id, chatId, text),
+    mutationFn: (text: string) => sendMessage(me!.id, chatId, text),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["chat-list-item", me!._id, chatId],
+        queryKey: ["chat-list-item", me!.id, chatId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["chat-list", me!._id],
+        queryKey: ["chat-list", me!.id],
       });
     },
     onError: (error) => {
@@ -60,7 +60,7 @@ export default function ActiveChatFooter({
     if (!isValid) return;
 
     await queryClient.setQueryData(
-      ["chat-list-item", me!._id, chatId],
+      ["chat-list-item", me!.id, chatId],
       (currentValue: IChatHistory) => {
         const newValue: IChatHistory = {
           ...currentValue,
@@ -71,7 +71,7 @@ export default function ActiveChatFooter({
               text: formValue.text,
               createdAt: new Date(),
               createdBy: {
-                _id: me!._id,
+                _id: me!.id,
               },
               chat: {
                 _id: chatId,

@@ -11,7 +11,7 @@ import {
 
 interface ChatContactItemProps {
   primary: string;
-  secondary?: string;
+  secondary?: string | null;
   onSelected: () => void;
 }
 

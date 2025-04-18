@@ -18,7 +18,7 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
     error,
   } = useQuery({
     enabled: !!chatId,
-    queryKey: ["chat-list-item", chatId],
+    queryKey: ["chat-list-item", me!.id, chatId],
     queryFn: () => getChatListItem(chatId!),
     select: (item) => ({
       ...item,

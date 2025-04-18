@@ -24,7 +24,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["chat-list"],
+    queryKey: ["chat-list", me!.id],
     queryFn: () => getChatList(),
     select: (list) =>
       list.map((item) => ({

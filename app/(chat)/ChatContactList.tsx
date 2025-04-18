@@ -38,9 +38,8 @@ export default function ChatContactList({
     isLoading,
     error,
   } = useQuery({
-    enabled: !!me?._id,
-    queryKey: ["contacts", me!._id],
-    queryFn: () => getContacts(me!._id),
+    queryKey: ["contacts", me!.id],
+    queryFn: getContacts,
   });
   const filteredContacts = useMemo(() => {
     return !contactSearchText
@@ -103,10 +102,10 @@ export default function ChatContactList({
           <List>
             {filteredContacts.map((contact) => (
               <ChatContactItem
-                key={contact._id}
+                key={contact.id}
                 primary={contact.name}
                 secondary={contact.statusInfo}
-                onSelected={() => onSelected(contact._id)}
+                onSelected={() => onSelected(contact.id)}
               />
             ))}
           </List>
