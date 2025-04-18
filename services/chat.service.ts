@@ -2,6 +2,7 @@ import api from "@/lib/axios";
 import {
   ChatList,
   ChatListItem,
+  ChatMessage,
   IChat,
   IChatMessage,
 } from "@/types/global.types";
@@ -20,15 +21,14 @@ export const getChatListItem = async (
 };
 
 export const sendMessage = async (
-  meId: string,
   chatId: string,
   text: string
-): Promise<IChatMessage> => {
+): Promise<ChatMessage> => {
   const body = {
     text,
   };
-  const response = await axios.post<IChatMessage>(
-    `/api/me/${meId}/chat-list-item/${chatId}/messages`,
+  const response = await api.post<ChatMessage>(
+    `/chat-list/${chatId}/messages`,
     body
   );
   return response.data;

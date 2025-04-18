@@ -78,6 +78,16 @@ export type ChatMessageStatus = {
   name: string;
 };
 
+export type ChatMessage = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  chatId: string;
+  statusId: string;
+  text: string;
+};
+
 export type ChatListMessage = {
   id: string;
   createdAt: Date;

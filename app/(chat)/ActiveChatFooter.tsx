@@ -1,9 +1,9 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { sendMessage } from "@/services/chat.service";
 import {
-  IChatHistory,
-  IChatMessage,
-  IChatMessageStatus,
+  ChatListItem,
+  ChatListMessage,
+  ChatMessageStatusId,
 } from "@/types/global.types";
 import { Add, Mic, Send } from "@mui/icons-material";
 import { Box, Divider, IconButton, TextField } from "@mui/material";
@@ -42,7 +42,7 @@ export default function ActiveChatFooter({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sendMessageMutation = useMutation({
-    mutationFn: (text: string) => sendMessage(me!.id, chatId, text),
+    mutationFn: (text: string) => sendMessage(chatId, text),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["chat-list-item", me!.id, chatId],
@@ -61,23 +61,24 @@ export default function ActiveChatFooter({
 
     await queryClient.setQueryData(
       ["chat-list-item", me!.id, chatId],
-      (currentValue: IChatHistory) => {
-        const newValue: IChatHistory = {
+      (currentValue: ChatListItem) => {
+        const newValue: ChatListItem = {
           ...currentValue,
-          history: [
-            ...currentValue.history,
+          lastMessages: [
+            ...currentValue.lastMessages,
+            // Creamos un mensaje fake para mostrarlo rápidamente en pantalla
+            // y luego será reemplazado cuando se invalide la caché del listado de mensajes
             {
-              _id: Math.random().toString(),
+              id: Math.random().toString(),
               text: formValue.text,
               createdAt: new Date(),
-              createdBy: {
-                _id: me!.id,
+              user: {
+                id: me!.id,
               },
-              chat: {
-                _id: chatId,
+              status: {
+                id: ChatMessageStatusId.Sending,
               },
-              status: IChatMessageStatus.Sending,
-            } as unknown as IChatMessage,
+            } as unknown as ChatListMessage,
           ],
         };
         return newValue;
