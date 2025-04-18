@@ -1,9 +1,9 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { deleteMessage } from "@/services/chat.service";
 import {
+  ChatListItem,
   ChatListMessage,
   ChatMessageStatusId,
-  IChatHistory,
 } from "@/types/global.types";
 import { Check, MoreVert, Schedule } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem, Paper, Typography } from "@mui/material";
@@ -29,7 +29,7 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const deleteMessageMutation = useMutation({
-      mutationFn: () => deleteMessage(me!.id, chatId, id),
+      mutationFn: () => deleteMessage(chatId, id),
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["chat-list-item", me!.id, chatId],
@@ -52,10 +52,12 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
       setAnchorEl(null);
       await queryClient.setQueryData(
         ["chat-list-item", me!.id, chatId],
-        (currentValue: IChatHistory) => {
-          const newValue: IChatHistory = {
+        (currentValue: ChatListItem) => {
+          const newValue: ChatListItem = {
             ...currentValue,
-            history: currentValue.history.filter((msg) => msg._id !== id),
+            lastMessages: currentValue.lastMessages.filter(
+              (msg) => msg.id !== id
+            ),
           };
           return newValue;
         }

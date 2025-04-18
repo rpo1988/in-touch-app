@@ -35,12 +35,11 @@ export const sendMessage = async (
 };
 
 export const deleteMessage = async (
-  meId: string,
   chatId: string,
   chatMessageId: string
-): Promise<IChatMessage> => {
-  const response = await axios.delete<IChatMessage>(
-    `/api/me/${meId}/chat-list-item/${chatId}/messages/${chatMessageId}`
+): Promise<ChatMessage> => {
+  const response = await api.delete<ChatMessage>(
+    `/chat-list/${chatId}/messages/${chatMessageId}`
   );
   return response.data;
 };
