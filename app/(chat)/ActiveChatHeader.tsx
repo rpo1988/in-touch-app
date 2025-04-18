@@ -10,7 +10,7 @@ import { grey } from "@mui/material/colors";
 
 export type ActiveChatHeaderProps = {
   title: string;
-  subtitle?: string;
+  subtitle?: string | null;
 };
 
 export default function ActiveChatHeader({

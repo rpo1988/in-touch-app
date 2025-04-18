@@ -1,15 +1,15 @@
 import api from "@/lib/axios";
-import { IUser } from "@/types/global.types";
+import { User } from "@/types/global.types";
 
-export const signin = async (body: { username: string }): Promise<IUser> => {
-  const response = await api.post<IUser>("/auth/signin", body);
+export const signin = async (body: { username: string }): Promise<User> => {
+  const response = await api.post<User>("/auth/signin", body);
   return response.data;
 };
 
 export const signup = async (
-  body: Pick<IUser, "username" | "name" | "statusInfo">
-): Promise<IUser> => {
-  const response = await api.post<IUser>("/auth/signup", body);
+  body: Pick<User, "username" | "name" | "statusInfo">
+): Promise<User> => {
+  const response = await api.post<User>("/auth/signup", body);
   return response.data;
 };
 

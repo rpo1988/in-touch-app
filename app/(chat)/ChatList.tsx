@@ -24,15 +24,19 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     isLoading,
     error,
   } = useQuery({
-    enabled: !!me?._id,
-    queryKey: ["chat-list", me!._id],
-    queryFn: () => getChatList(me!._id),
+    queryKey: ["chat-list"],
+    queryFn: () => getChatList(),
+    select: (list) =>
+      list.map((item) => ({
+        ...item,
+        membersWithoutMe: item.members.filter((item) => item.id !== me!.id),
+      })),
   });
   const createChatMutation = useMutation({
-    mutationFn: (contactId: string) => createChat(me!._id, contactId),
+    mutationFn: (contactId: string) => createChat(me!.id, contactId),
     onSuccess: async (newChat) => {
       queryClient.invalidateQueries({
-        queryKey: ["chat-list", me!._id],
+        queryKey: ["chat-list", me!.id],
       });
       onSelected(newChat._id);
     },
@@ -41,10 +45,10 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     },
   });
   const deleteChatMutation = useMutation({
-    mutationFn: (chatId: string) => deleteChat(me!._id, chatId),
+    mutationFn: (chatId: string) => deleteChat(me!.id, chatId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["chat-list", me!._id],
+        queryKey: ["chat-list", me!.id],
       });
       onSelected();
     },
@@ -55,11 +59,11 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
 
   const handleContactSelected = (contactId: string) => {
     const currentChat = chatList.find((chat) =>
-      chat.members.some((member) => member._id === contactId)
+      chat.members.some((member) => member.id === contactId)
     );
     if (!!currentChat) {
       // Contact chat already created, so open it
-      onSelected(currentChat._id);
+      onSelected(currentChat.chat.id);
     } else {
       // New contact chat, so create it and open it
       createChatMutation.mutate(contactId);
@@ -68,7 +72,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
 
   const handleDelete = (chatId: string) => async () => {
     await queryClient.setQueryData(
-      ["chat-list", me!._id],
+      ["chat-list", me!.id],
       (currentValue: IChat[]) =>
         currentValue.filter((chat) => chat._id !== chatId)
     );
@@ -109,13 +113,17 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         ) : (
           chatList.map((item) => (
             <ChatItem
-              key={item._id}
-              primary={item.title!}
-              secondary={item.lastChatMessage?.text}
-              third={item.lastChatMessage?.createdAt || item.createdAt}
-              selected={item._id === selectedId}
-              onSelected={() => onSelected(item._id)}
-              onDelete={handleDelete(item._id)}
+              key={item.chat.id}
+              primary={
+                item.chat.isGroup
+                  ? item.chat.title!
+                  : item.membersWithoutMe[0].name
+              }
+              secondary={item.lastMessages[0]?.text}
+              third={item.lastMessages[0]?.createdAt || item.chat.createdAt}
+              selected={item.chat.id === selectedId}
+              onSelected={() => onSelected(item.chat.id)}
+              onDelete={handleDelete(item.chat.id)}
             />
           ))
         )}

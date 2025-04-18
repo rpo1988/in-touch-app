@@ -1,7 +1,7 @@
 import ChatDateMessage from "@/app/(chat)/ChatDateMessage";
 import ChatMessage from "@/app/(chat)/ChatMessage";
 import { useMe } from "@/providers/ProfileProvider";
-import { IChatMessage } from "@/types/global.types";
+import { ChatListMessage } from "@/types/global.types";
 import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
@@ -10,12 +10,14 @@ import { RefObject, useCallback, useMemo } from "react";
 export const lastIdRef = "chat-message-last";
 
 interface ActiveChatContentProps {
-  data?: IChatMessage[];
+  chatId?: string;
+  data?: ChatListMessage[];
   isLoading: boolean;
   messageRefs: RefObject<Map<string, HTMLDivElement>>;
 }
 
 export default function ActiveChatContent({
+  chatId,
   data,
   isLoading,
   messageRefs,
@@ -45,16 +47,17 @@ export default function ActiveChatContent({
       }
       acc.push(
         <ChatMessage
-          key={message._id}
-          ref={setMessageRef(message._id)}
+          key={message.id}
+          ref={setMessageRef(message.id)}
+          chatId={chatId!}
           chatMessage={message}
-          sentByMe={me!._id === message.createdBy._id}
+          sentByMe={me!.id === message.user.id}
         />
       );
       return acc;
     }, [] as React.ReactNode[]);
     return allMessages;
-  }, [me, data, setMessageRef]);
+  }, [me, chatId, data, setMessageRef]);
 
   return (
     <>

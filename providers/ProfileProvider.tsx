@@ -17,7 +17,7 @@ const useInternalProfile = () => {
 
   const login = async (username: string) => {
     const data = await signin({ username });
-    queryClient.setQueryData(["me", data._id], data);
+    queryClient.setQueryData(["me"], data);
     queryClient.invalidateQueries({
       queryKey: ["me"],
     });

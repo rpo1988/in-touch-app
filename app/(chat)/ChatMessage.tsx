@@ -1,9 +1,9 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { deleteMessage } from "@/services/chat.service";
 import {
+  ChatListMessage,
+  ChatMessageStatusId,
   IChatHistory,
-  IChatMessage,
-  IChatMessageStatus,
 } from "@/types/global.types";
 import { Check, MoreVert, Schedule } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem, Paper, Typography } from "@mui/material";
@@ -14,22 +14,14 @@ import dayjs from "dayjs";
 import { forwardRef, useState } from "react";
 
 type ChatMessageProps = {
-  chatMessage: IChatMessage;
+  chatId: string;
+  chatMessage: ChatListMessage;
   sentByMe: boolean;
 };
 
 export default forwardRef<HTMLDivElement, ChatMessageProps>(
   function ChatMessage(
-    {
-      chatMessage: {
-        createdAt,
-        text,
-        status,
-        chat: { _id: chatId },
-        _id,
-      },
-      sentByMe,
-    },
+    { chatId, chatMessage: { createdAt, text, status, id }, sentByMe },
     ref
   ) {
     const queryClient = useQueryClient();
@@ -37,13 +29,13 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const deleteMessageMutation = useMutation({
-      mutationFn: () => deleteMessage(me!._id, chatId, _id),
+      mutationFn: () => deleteMessage(me!.id, chatId, id),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["chat-history", me!._id, chatId],
+          queryKey: ["chat-list-item", me!.id, chatId],
         });
         queryClient.invalidateQueries({
-          queryKey: ["chat-list", me!._id],
+          queryKey: ["chat-list", me!.id],
         });
       },
       onError: (error) => {
@@ -59,11 +51,11 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
     const handleDelete = async () => {
       setAnchorEl(null);
       await queryClient.setQueryData(
-        ["chat-history", me!._id, chatId],
+        ["chat-list-item", me!.id, chatId],
         (currentValue: IChatHistory) => {
           const newValue: IChatHistory = {
             ...currentValue,
-            history: currentValue.history.filter((msg) => msg._id !== _id),
+            history: currentValue.history.filter((msg) => msg._id !== id),
           };
           return newValue;
         }
@@ -99,7 +91,7 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
             >
               {dayjs(createdAt).format("HH:mma")}
             </Typography>
-            {!sentByMe ? null : status === IChatMessageStatus.Received ? (
+            {!sentByMe ? null : status.id === ChatMessageStatusId.Received ? (
               <Check
                 sx={{
                   fontSize: 16,

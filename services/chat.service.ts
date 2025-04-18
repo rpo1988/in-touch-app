@@ -1,38 +1,22 @@
+import api from "@/lib/axios";
 import {
+  ChatList,
+  ChatListItem,
   IChat,
-  IChatHistory,
-  IChatInfo,
   IChatMessage,
 } from "@/types/global.types";
 import axios from "axios";
 
-export const getChatList = async (meId: string): Promise<IChatInfo[]> => {
-  const response = await axios.get<IChatInfo[]>(`/api/me/${meId}/chat-list`);
-  const enhancedResponse = response.data.map((chat) => ({
-    ...chat,
-    title:
-      meId === chat.createdBy._id ? chat.members[0].name : chat.createdBy.name,
-  }));
-  return enhancedResponse;
+export const getChatList = async (): Promise<ChatList[]> => {
+  const response = await api.get<ChatList[]>("/chat-list");
+  return response.data;
 };
 
-export const getChatHistory = async (
-  meId: string,
+export const getChatListItem = async (
   chatId: string
-): Promise<IChatHistory> => {
-  const response = await axios.get<IChatHistory>(
-    `/api/me/${meId}/chat-history/${chatId}`
-  );
-  const targetUser =
-    meId === response.data.createdBy._id
-      ? response.data.members[0]
-      : response.data.createdBy;
-  const enhancedResponse = {
-    ...response.data,
-    title: targetUser.name,
-    description: targetUser.statusInfo,
-  };
-  return enhancedResponse;
+): Promise<ChatListItem> => {
+  const response = await api.get<ChatListItem>(`/chat-list/${chatId}`);
+  return response.data;
 };
 
 export const sendMessage = async (
@@ -44,7 +28,7 @@ export const sendMessage = async (
     text,
   };
   const response = await axios.post<IChatMessage>(
-    `/api/me/${meId}/chat-history/${chatId}/messages`,
+    `/api/me/${meId}/chat-list-item/${chatId}/messages`,
     body
   );
   return response.data;
@@ -56,7 +40,7 @@ export const deleteMessage = async (
   chatMessageId: string
 ): Promise<IChatMessage> => {
   const response = await axios.delete<IChatMessage>(
-    `/api/me/${meId}/chat-history/${chatId}/messages/${chatMessageId}`
+    `/api/me/${meId}/chat-list-item/${chatId}/messages/${chatMessageId}`
   );
   return response.data;
 };

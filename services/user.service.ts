@@ -1,9 +1,9 @@
 import api from "@/lib/axios";
-import { IUser, IUserContact } from "@/types/global.types";
+import { IUser, IUserContact, User } from "@/types/global.types";
 import axios from "axios";
 
-export const getMe = async (): Promise<IUser> => {
-  const response = await api.get<IUser>("/users/me");
+export const getMe = async (): Promise<User> => {
+  const response = await api.get<User>("/users/me");
   return response.data;
 };
 

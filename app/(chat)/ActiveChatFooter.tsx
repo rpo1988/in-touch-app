@@ -45,7 +45,7 @@ export default function ActiveChatFooter({
     mutationFn: (text: string) => sendMessage(me!._id, chatId, text),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["chat-history", me!._id, chatId],
+        queryKey: ["chat-list-item", me!._id, chatId],
       });
       queryClient.invalidateQueries({
         queryKey: ["chat-list", me!._id],
@@ -60,7 +60,7 @@ export default function ActiveChatFooter({
     if (!isValid) return;
 
     await queryClient.setQueryData(
-      ["chat-history", me!._id, chatId],
+      ["chat-list-item", me!._id, chatId],
       (currentValue: IChatHistory) => {
         const newValue: IChatHistory = {
           ...currentValue,
