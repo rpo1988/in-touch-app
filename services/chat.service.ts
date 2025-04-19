@@ -4,9 +4,7 @@ import {
   ChatList,
   ChatListItem,
   ChatMessage,
-  IChat,
 } from "@/types/global.types";
-import axios from "axios";
 
 export const getChatList = async (): Promise<ChatList[]> => {
   const response = await api.get<ChatList[]>("/chat-list");
@@ -44,14 +42,12 @@ export const deleteMessage = async (
   return response.data;
 };
 
-export const createChat = async (
-  meId: string,
-  contactId: string
-): Promise<IChat> => {
+export const createChat = async (contactId: string): Promise<Chat> => {
   const body = {
-    contactId,
+    memberIds: [contactId],
+    isGroup: false,
   };
-  const response = await axios.post<IChat>(`/api/me/${meId}/chat-list`, body);
+  const response = await api.post<Chat>("/chat-list", body);
   return response.data;
 };
 

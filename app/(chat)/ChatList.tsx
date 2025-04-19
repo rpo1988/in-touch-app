@@ -33,12 +33,12 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
       })),
   });
   const createChatMutation = useMutation({
-    mutationFn: (contactId: string) => createChat(me!.id, contactId),
+    mutationFn: createChat,
     onSuccess: async (newChat) => {
       queryClient.invalidateQueries({
         queryKey: ["chat-list", me!.id],
       });
-      onSelected(newChat._id);
+      onSelected(newChat.id);
     },
     onError: (error) => {
       console.error(error);
