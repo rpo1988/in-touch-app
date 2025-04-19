@@ -109,7 +109,6 @@ export default withoutProfile(function LoginPage() {
                 label="Username"
                 placeholder="Type your username"
                 variant="outlined"
-                size="small"
                 autoComplete="off"
                 error={loginMutation.isError || !!fieldState.error}
                 helperText={

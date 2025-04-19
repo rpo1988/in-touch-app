@@ -11,6 +11,7 @@ export const lastIdRef = "chat-message-last";
 
 interface ActiveChatContentProps {
   chatId?: string;
+  isGroup?: boolean;
   data?: IChatListMessage[];
   isLoading: boolean;
   messageRefs: RefObject<Map<string, HTMLDivElement>>;
@@ -18,6 +19,7 @@ interface ActiveChatContentProps {
 
 export default function ActiveChatContent({
   chatId,
+  isGroup = false,
   data,
   isLoading,
   messageRefs,
@@ -52,12 +54,13 @@ export default function ActiveChatContent({
           chatId={chatId!}
           chatMessage={message}
           sentByMe={me!.id === message.user.id}
+          showOwner={isGroup}
         />
       );
       return acc;
     }, [] as React.ReactNode[]);
     return allMessages;
-  }, [me, chatId, data, setMessageRef]);
+  }, [me, chatId, data, isGroup, setMessageRef]);
 
   return (
     <>

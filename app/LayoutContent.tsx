@@ -11,7 +11,7 @@ const theme = createTheme({});
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: process.env.NODE_ENV === "production",
     },
   },
 });

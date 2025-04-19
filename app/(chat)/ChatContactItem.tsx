@@ -3,6 +3,7 @@
 import { Person } from "@mui/icons-material";
 import {
   Avatar,
+  Checkbox,
   ListItem,
   ListItemAvatar,
   ListItemButton,
@@ -12,21 +13,34 @@ import {
 interface ChatContactItemProps {
   primary: string;
   secondary?: string | null;
+  selectable?: boolean;
+  selected?: boolean;
   onSelected: () => void;
 }
 
 export default function ChatContactItem({
   primary,
   secondary,
+  selectable = false,
+  selected = false,
   onSelected,
 }: ChatContactItemProps) {
   return (
     <>
-      <ListItem component="div" disablePadding>
+      <ListItem
+        component="div"
+        disablePadding
+        secondaryAction={
+          selectable ? (
+            <Checkbox edge="end" onChange={onSelected} checked={selected} />
+          ) : null
+        }
+      >
         <ListItemButton
           sx={{
             maxHeight: 56,
           }}
+          selected={selected}
           onClick={onSelected}
         >
           <ListItemAvatar>

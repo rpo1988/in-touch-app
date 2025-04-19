@@ -61,7 +61,6 @@ export default function ChatItem({
               <Person />
             </Avatar>
           </ListItemAvatar>
-          {/* TODO: Control when there is more than 1 member (groups) */}
           <ListItemText
             primary={primary}
             secondary={secondary}

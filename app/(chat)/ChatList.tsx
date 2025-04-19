@@ -1,4 +1,5 @@
 import ChatContactPanel from "@/app/(chat)/ChatContactPanel";
+import ChatGroupCreationPanel from "@/app/(chat)/ChatGroupCreationPanel";
 import ChatItem from "@/app/(chat)/ChatItem";
 import ChatListHeader from "@/app/(chat)/ChatListHeader";
 import Info from "@/app/(chat)/Info";
@@ -18,6 +19,7 @@ type ChatListProps = {
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const { me } = useMe();
   const [openContactPanel, setOpenContactPanel] = useState(false);
+  const [openGroupCreationPanel, setOpenGroupCreationPanel] = useState(false);
   const queryClient = useQueryClient();
   const {
     data: chatList = [],
@@ -65,8 +67,11 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
       // Contact chat already created, so open it
       onSelected(currentChat.chat.id);
     } else {
-      // New contact chat, so create it and open it
-      createChatMutation.mutate(contactId);
+      // New single chat, so create it and open it
+      createChatMutation.mutate({
+        memberIds: [me!.id, contactId],
+        isGroup: false,
+      });
     }
   };
 
@@ -83,9 +88,31 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     setOpenContactPanel((value) => !value);
   };
 
+  const toggleGroupCreationPanel = () => {
+    setOpenGroupCreationPanel((value) => !value);
+  };
+
   const handleSelected = (contactId: string) => {
     toggleContactPanel();
     handleContactSelected(contactId);
+  };
+
+  const handleCreateGroup = (
+    chatGroup: Pick<IChat, "title" | "description"> & { memberIds: string[] }
+  ) => {
+    toggleGroupCreationPanel();
+    // Create a group chat and open it
+    createChatMutation.mutate({
+      memberIds: [...chatGroup.memberIds, me!.id],
+      isGroup: true,
+      title: chatGroup.title,
+      description: chatGroup.description,
+    });
+  };
+
+  const handleoAddGroupClick = () => {
+    toggleContactPanel();
+    toggleGroupCreationPanel();
   };
 
   if (isLoading)
@@ -133,6 +160,13 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         open={openContactPanel}
         onClose={toggleContactPanel}
         onSelected={handleSelected}
+        onAddGroupClick={handleoAddGroupClick}
+      />
+
+      <ChatGroupCreationPanel
+        open={openGroupCreationPanel}
+        onClose={toggleGroupCreationPanel}
+        onCreate={handleCreateGroup}
       />
     </div>
   );

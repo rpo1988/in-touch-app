@@ -14,12 +14,14 @@ interface ChatContactPanelProps {
   open: boolean;
   onClose: () => void;
   onSelected: (contactId: string) => void;
+  onAddGroupClick: () => void;
 }
 
 export default function ChatContactPanel({
   open,
   onClose,
   onSelected,
+  onAddGroupClick,
 }: ChatContactPanelProps) {
   const handleClose = () => {
     onClose();
@@ -37,6 +39,11 @@ export default function ChatContactPanel({
               <Typography variant="h6" noWrap component="div">
                 New Chat
               </Typography>
+            </div>
+            <div>
+              <IconButton onClick={onAddGroupClick}>
+                <GroupAdd />
+              </IconButton>
             </div>
           </Toolbar>
           <Divider />

@@ -59,13 +59,14 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
           }
           subtitle={
             chatListItem.chat.isGroup
-              ? chatListItem.chat.description
+              ? chatListItem.chat.description?.split("\n")[0]
               : chatListItem.membersWithoutMe[0].statusInfo
           }
         />
       )}
       <ActiveChatContent
         chatId={chatListItem?.chat.id}
+        isGroup={chatListItem?.chat.isGroup}
         data={chatListItem?.lastMessages}
         isLoading={isLoading}
         messageRefs={messageRefs}

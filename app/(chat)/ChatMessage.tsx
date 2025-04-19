@@ -11,17 +11,24 @@ import { green } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import randomColor from "randomcolor";
 import { forwardRef, useState } from "react";
 
 type ChatMessageProps = {
   chatId: string;
   chatMessage: IChatListMessage;
   sentByMe: boolean;
+  showOwner?: boolean;
 };
 
 export default forwardRef<HTMLDivElement, ChatMessageProps>(
   function ChatMessage(
-    { chatId, chatMessage: { createdAt, text, status, id }, sentByMe },
+    {
+      chatId,
+      chatMessage: { createdAt, text, status, id, user },
+      sentByMe,
+      showOwner,
+    },
     ref
   ) {
     const queryClient = useQueryClient();
@@ -81,6 +88,20 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
             "self-start": !sentByMe,
           })}
         >
+          {showOwner && !sentByMe && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: randomColor({
+                  seed: user.id,
+                  luminosity: "bright",
+                  format: "hsl",
+                }),
+              }}
+            >
+              ~ {user.name}
+            </Typography>
+          )}
           <Typography variant="body1">{text}</Typography>
           <div className="flex gap-0.5 justify-end">
             <Typography

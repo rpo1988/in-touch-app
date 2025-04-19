@@ -12,11 +12,15 @@ import { useEffect, useMemo, useState } from "react";
 
 interface ChatContactListProps {
   open: boolean;
+  selectable?: boolean;
+  selectedIds?: Map<string, boolean>;
   onSelected: (contactId: string) => void;
 }
 
 export default function ChatContactList({
   open,
+  selectable = false,
+  selectedIds = new Map(),
   onSelected,
 }: ChatContactListProps) {
   const { me } = useMe();
@@ -80,6 +84,8 @@ export default function ChatContactList({
                 key={contact.id}
                 primary={contact.name}
                 secondary={contact.statusInfo}
+                selectable={selectable}
+                selected={!!selectedIds.get(contact.id)}
                 onSelected={() => onSelected(contact.id)}
               />
             ))}

@@ -104,7 +104,6 @@ export default withoutProfile(function LoginPage() {
                 label="Username"
                 placeholder="Type your username"
                 variant="outlined"
-                size="small"
                 autoComplete="off"
                 error={registerMutation.isError || !!fieldState.error}
                 helperText={
@@ -126,7 +125,6 @@ export default withoutProfile(function LoginPage() {
                 label="Name"
                 placeholder="Type your name"
                 variant="outlined"
-                size="small"
                 autoComplete="off"
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}

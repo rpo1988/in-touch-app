@@ -16,9 +16,9 @@ api.interceptors.response.use(
   (error) => {
     // Ensure this runs only on the client side
     if (typeof window !== "undefined") {
-      // Check if the error is a 403
+      // Check if the error is a 401
       if (
-        error.response?.status === 403 &&
+        error.response?.status === 401 &&
         !WHITE_LIST.includes(window.location.pathname)
       ) {
         // Redirect to /login

@@ -21,7 +21,7 @@ export default forwardRef<HTMLDivElement, ChatDateMessageProps>(
           className={clsx("flex flex-col mx-4 my-1 p-2 self-center")}
         >
           <Typography variant="body1" fontSize={12}>
-            {formatedDateMessage(date, "uppercase")}
+            {formatedDateMessage(date, "uppercase", false)}
           </Typography>
         </Paper>
       </>

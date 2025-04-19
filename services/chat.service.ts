@@ -4,6 +4,7 @@ import {
   IChatList,
   IChatListItem,
   IChatMessage,
+  IUser,
 } from "@/types/global.types";
 
 export const getChatList = async (): Promise<IChatList[]> => {
@@ -42,11 +43,11 @@ export const deleteMessage = async (
   return response.data;
 };
 
-export const createChat = async (contactId: string): Promise<IChat> => {
-  const body = {
-    memberIds: [contactId],
-    isGroup: false,
-  };
+export const createChat = async (
+  body: Pick<IChat, "isGroup" | "title" | "description"> & {
+    memberIds: IUser["id"][];
+  }
+): Promise<IChat> => {
   const response = await api.post<IChat>("/chat-list", body);
   return response.data;
 };
