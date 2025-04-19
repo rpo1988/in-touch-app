@@ -1,9 +1,9 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { deleteMessage } from "@/services/chat.service";
 import {
-  ChatListItem,
-  ChatListMessage,
   ChatMessageStatusId,
+  IChatListItem,
+  IChatListMessage,
 } from "@/types/global.types";
 import { Check, MoreVert, Schedule } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem, Paper, Typography } from "@mui/material";
@@ -15,7 +15,7 @@ import { forwardRef, useState } from "react";
 
 type ChatMessageProps = {
   chatId: string;
-  chatMessage: ChatListMessage;
+  chatMessage: IChatListMessage;
   sentByMe: boolean;
 };
 
@@ -52,8 +52,8 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
       setAnchorEl(null);
       await queryClient.setQueryData(
         ["chat-list-item", me!.id, chatId],
-        (currentValue: ChatListItem) => {
-          const newValue: ChatListItem = {
+        (currentValue: IChatListItem) => {
+          const newValue: IChatListItem = {
             ...currentValue,
             lastMessages: currentValue.lastMessages.filter(
               (msg) => msg.id !== id

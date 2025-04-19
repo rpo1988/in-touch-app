@@ -3,7 +3,7 @@
 import { SEARCH_PARAM_USERNAME } from "@/app/register/page";
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
-import { ApiError } from "@/types/global.types";
+import { IApiError } from "@/types/global.types";
 import {
   Box,
   Button,
@@ -40,7 +40,7 @@ export default withoutProfile(function LoginPage() {
       username: "",
     },
   });
-  const loginMutation = useMutation<void, AxiosError<ApiError>, string>({
+  const loginMutation = useMutation<void, AxiosError<IApiError>, string>({
     mutationFn: (username: string) => login(username),
   });
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,8 +1,8 @@
-export interface ApiError {
+export interface IApiError {
   message: string;
 }
 
-export type User = {
+export type IUser = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -11,11 +11,11 @@ export type User = {
   statusInfo?: string | null;
 };
 
-export type Chat = {
+export type IChat = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  isGroup: true;
+  isGroup: boolean;
   title?: string | null;
   description?: string | null;
 };
@@ -25,12 +25,12 @@ export enum ChatMessageStatusId {
   Received = "1",
 }
 
-export type ChatMessageStatus = {
+export type IChatMessageStatus = {
   id: ChatMessageStatusId;
   name: string;
 };
 
-export type ChatMessage = {
+export type IChatMessage = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -40,23 +40,23 @@ export type ChatMessage = {
   text: string;
 };
 
-export type ChatListMessage = {
+export type IChatListMessage = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  user: Pick<User, "id" | "name">;
-  status: Pick<ChatMessageStatus, "id" | "name">;
+  user: Pick<IUser, "id" | "name">;
+  status: Pick<IChatMessageStatus, "id" | "name">;
   text: string;
 };
 
-export interface ChatList {
-  chat: Pick<Chat, "id" | "isGroup" | "title" | "createdAt">;
-  members: Pick<User, "id" | "name">[];
-  lastMessages: ChatListMessage[];
-}
+export type IChatList = {
+  chat: Pick<IChat, "id" | "isGroup" | "title" | "createdAt">;
+  members: Pick<IUser, "id" | "name">[];
+  lastMessages: IChatListMessage[];
+};
 
-export interface ChatListItem {
-  chat: Chat;
-  members: Pick<User, "id" | "name" | "statusInfo">[];
-  lastMessages: ChatListMessage[];
-}
+export type IChatListItem = {
+  chat: IChat;
+  members: Pick<IUser, "id" | "name" | "statusInfo">[];
+  lastMessages: IChatListMessage[];
+};

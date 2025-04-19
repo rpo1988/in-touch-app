@@ -4,7 +4,7 @@ import ChatListHeader from "@/app/(chat)/ChatListHeader";
 import Info from "@/app/(chat)/Info";
 import { useMe } from "@/providers/ProfileProvider";
 import { createChat, deleteChat, getChatList } from "@/services/chat.service";
-import { IChat } from "@/types/global.types";
+import { IChat, IChatList } from "@/types/global.types";
 import { transform } from "@/utils/text";
 import { CircularProgress, List } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -73,8 +73,8 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const handleDelete = (chatId: string) => async () => {
     await queryClient.setQueryData(
       ["chat-list", me!.id],
-      (currentValue: IChat[]) =>
-        currentValue.filter((chat) => chat._id !== chatId)
+      (currentValue: IChatList[]) =>
+        currentValue.filter((chat) => chat.chat.id !== chatId)
     );
     deleteChatMutation.mutate(chatId);
   };

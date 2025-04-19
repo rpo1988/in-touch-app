@@ -1,9 +1,9 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { sendMessage } from "@/services/chat.service";
 import {
-  ChatListItem,
-  ChatListMessage,
   ChatMessageStatusId,
+  IChatListItem,
+  IChatListMessage,
 } from "@/types/global.types";
 import { Add, Mic, Send } from "@mui/icons-material";
 import { Box, Divider, IconButton, TextField } from "@mui/material";
@@ -61,8 +61,8 @@ export default function ActiveChatFooter({
 
     await queryClient.setQueryData(
       ["chat-list-item", me!.id, chatId],
-      (currentValue: ChatListItem) => {
-        const newValue: ChatListItem = {
+      (currentValue: IChatListItem) => {
+        const newValue: IChatListItem = {
           ...currentValue,
           lastMessages: [
             ...currentValue.lastMessages,
@@ -78,7 +78,7 @@ export default function ActiveChatFooter({
               status: {
                 id: ChatMessageStatusId.Sending,
               },
-            } as unknown as ChatListMessage,
+            } as unknown as IChatListMessage,
           ],
         };
         return newValue;

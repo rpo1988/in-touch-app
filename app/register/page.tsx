@@ -3,7 +3,7 @@
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
 import { signup } from "@/services/auth.service";
-import { ApiError, User } from "@/types/global.types";
+import { IApiError, IUser } from "@/types/global.types";
 import {
   Box,
   Button,
@@ -43,9 +43,11 @@ export default withoutProfile(function LoginPage() {
       statusInfo: "",
     },
   });
-  const registerMutation = useMutation<User, AxiosError<ApiError>, FormValue>({
-    mutationFn: signup,
-  });
+  const registerMutation = useMutation<IUser, AxiosError<IApiError>, FormValue>(
+    {
+      mutationFn: signup,
+    }
+  );
   const usernameRef = useRef<HTMLInputElement>(null);
 
   const onSubmit = async (formValue: FormValue) => {

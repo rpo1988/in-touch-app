@@ -1,13 +1,13 @@
 import api from "@/lib/axios";
-import { User } from "@/types/global.types";
+import { IUser } from "@/types/global.types";
 
-export const getMe = async (): Promise<User> => {
-  const response = await api.get<User>("/users/me");
+export const getMe = async (): Promise<IUser> => {
+  const response = await api.get<IUser>("/users/me");
   return response.data;
 };
 
-export const getContacts = async (): Promise<User[]> => {
-  const response = await api.get<User[]>("/users", {
+export const getContacts = async (): Promise<IUser[]> => {
+  const response = await api.get<IUser[]>("/users", {
     params: {
       excludeMe: "true",
     },

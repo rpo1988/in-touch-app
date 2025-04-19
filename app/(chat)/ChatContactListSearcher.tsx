@@ -44,7 +44,7 @@ export default function ChatContactListSearcher({
           render={({ field }) => (
             <TextField
               {...field}
-              placeholder="Type a contact name"
+              placeholder="Type a contact name to search"
               variant="outlined"
               size="small"
               className="grow"

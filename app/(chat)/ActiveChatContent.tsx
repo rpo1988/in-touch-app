@@ -1,7 +1,7 @@
 import ChatDateMessage from "@/app/(chat)/ChatDateMessage";
 import ChatMessage from "@/app/(chat)/ChatMessage";
 import { useMe } from "@/providers/ProfileProvider";
-import { ChatListMessage } from "@/types/global.types";
+import { IChatListMessage } from "@/types/global.types";
 import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
@@ -11,7 +11,7 @@ export const lastIdRef = "chat-message-last";
 
 interface ActiveChatContentProps {
   chatId?: string;
-  data?: ChatListMessage[];
+  data?: IChatListMessage[];
   isLoading: boolean;
   messageRefs: RefObject<Map<string, HTMLDivElement>>;
 }

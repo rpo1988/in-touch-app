@@ -6,27 +6,17 @@ import Info from "@/app/(chat)/Info";
 import { useMe } from "@/providers/ProfileProvider";
 import { getContacts } from "@/services/user.service";
 import { transform } from "@/utils/text";
-import { ArrowBack } from "@mui/icons-material";
-import {
-  CircularProgress,
-  Divider,
-  IconButton,
-  List,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, List } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 
 interface ChatContactListProps {
   open: boolean;
-  onClose: () => void;
   onSelected: (contactId: string) => void;
 }
 
 export default function ChatContactList({
   open,
-  onClose,
   onSelected,
 }: ChatContactListProps) {
   const { me } = useMe();
@@ -58,15 +48,6 @@ export default function ChatContactList({
 
   return (
     <>
-      <Toolbar className="flex flex-row gap-2.5">
-        <IconButton edge="start" onClick={onClose}>
-          <ArrowBack />
-        </IconButton>
-        <Typography variant="h6" noWrap component="div">
-          Contacts
-        </Typography>
-      </Toolbar>
-      <Divider />
       {error ? (
         <div className="p-4">Error loading contacts</div>
       ) : isLoading ? (

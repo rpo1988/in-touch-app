@@ -1,7 +1,14 @@
 "use client";
 
 import ChatContactList from "@/app/(chat)/ChatContactList";
-import { Drawer } from "@mui/material";
+import { ArrowBack, GroupAdd } from "@mui/icons-material";
+import {
+  Divider,
+  Drawer,
+  IconButton,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
 interface ChatContactPanelProps {
   open: boolean;
@@ -22,11 +29,19 @@ export default function ChatContactPanel({
     <>
       <Drawer anchor="left" open={open} onClose={handleClose}>
         <div className="w-[33vw] min-w-[300px]">
-          <ChatContactList
-            open={open}
-            onClose={handleClose}
-            onSelected={onSelected}
-          />
+          <Toolbar className="flex flex-row gap-2.5 justify-between">
+            <div className="flex flex-row gap-2.5 items-center">
+              <IconButton edge="start" onClick={onClose}>
+                <ArrowBack />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div">
+                New Chat
+              </Typography>
+            </div>
+          </Toolbar>
+          <Divider />
+
+          <ChatContactList open={open} onSelected={onSelected} />
         </div>
       </Drawer>
     </>
