@@ -4,6 +4,7 @@ import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
 import { signup } from "@/services/auth.service";
 import { IApiError, IUser } from "@/types/global.types";
+import { getApiErrorMessage } from "@/utils/api";
 import {
   Box,
   Button,
@@ -107,7 +108,7 @@ export default withoutProfile(function LoginPage() {
                 autoComplete="off"
                 error={registerMutation.isError || !!fieldState.error}
                 helperText={
-                  registerMutation.error?.response?.data.message ||
+                  getApiErrorMessage(registerMutation.error) ||
                   fieldState.error?.message
                 }
                 inputRef={usernameRef}

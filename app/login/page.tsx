@@ -4,6 +4,7 @@ import { SEARCH_PARAM_USERNAME } from "@/app/register/page";
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
 import { IApiError } from "@/types/global.types";
+import { getApiErrorMessage } from "@/utils/api";
 import {
   Box,
   Button,
@@ -41,7 +42,7 @@ export default withoutProfile(function LoginPage() {
     },
   });
   const loginMutation = useMutation<void, AxiosError<IApiError>, string>({
-    mutationFn: (username: string) => login(username),
+    mutationFn: login,
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -112,7 +113,7 @@ export default withoutProfile(function LoginPage() {
                 autoComplete="off"
                 error={loginMutation.isError || !!fieldState.error}
                 helperText={
-                  loginMutation.error?.response?.data.message ||
+                  getApiErrorMessage(loginMutation.error) ||
                   fieldState.error?.message
                 }
                 inputRef={inputRef}
