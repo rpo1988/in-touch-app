@@ -94,7 +94,7 @@ export default function ActiveChatFooter({
   useEffect(() => {
     if (sendMessageMutation.isPending) return;
     inputRef?.current?.focus();
-  }, [sendMessageMutation.isPending]);
+  }, [chatId, sendMessageMutation.isPending]);
 
   return (
     <>
