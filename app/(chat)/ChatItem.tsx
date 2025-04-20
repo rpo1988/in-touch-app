@@ -105,7 +105,7 @@ export default function ChatItem({
               opacity: 0,
               transition: "opacity 0.2s",
               background:
-                "radial-gradient(circle, rgb(255 255 255 0.04) 20%, transparent 100%)",
+                "radial-gradient(circle, rgb(255 255 255) 20%, transparent 100%)",
             }}
             onClick={handleMoreOptions(true)}
           >
