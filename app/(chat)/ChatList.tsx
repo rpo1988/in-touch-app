@@ -149,6 +149,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
               secondary={item.lastMessages[0]?.text}
               third={item.lastMessages[0]?.createdAt || item.chat.createdAt}
               selected={item.chat.id === selectedId}
+              isGroup={item.chat.isGroup}
               onSelected={() => onSelected(item.chat.id)}
               onDelete={handleDelete(item.chat.id)}
             />

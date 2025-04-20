@@ -1,5 +1,5 @@
 import { formatedDateMessage } from "@/utils/date";
-import { MoreVert, Person } from "@mui/icons-material";
+import { Group, MoreVert, Person } from "@mui/icons-material";
 import {
   Avatar,
   IconButton,
@@ -18,6 +18,7 @@ export type ChatItemProps = {
   secondary?: string;
   third: Date | string;
   selected?: boolean;
+  isGroup?: boolean;
   onSelected: () => void;
   onDelete: () => void;
 };
@@ -27,6 +28,7 @@ export default function ChatItem({
   secondary,
   third,
   selected,
+  isGroup = false,
   onSelected,
   onDelete,
 }: ChatItemProps) {
@@ -57,9 +59,7 @@ export default function ChatItem({
           }}
         >
           <ListItemAvatar>
-            <Avatar>
-              <Person />
-            </Avatar>
+            <Avatar>{isGroup ? <Group /> : <Person />}</Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={primary}
@@ -69,6 +69,7 @@ export default function ChatItem({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
+                marginRight: "50px",
               },
               secondary: {
                 overflow: "hidden",
