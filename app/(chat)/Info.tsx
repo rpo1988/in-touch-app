@@ -19,7 +19,7 @@ export default function Info({
         <Typography variant="h5" component="div">
           {title}
         </Typography>
-        <Typography component="p" color="textSecondary">
+        <Typography component="p" color="textSecondary" className="text-center">
           {description}
         </Typography>
         {!!actionText && onActionClick && (

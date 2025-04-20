@@ -57,6 +57,7 @@ export type IChatList = {
 
 export type IChatListItem = {
   chat: IChat;
-  members: Pick<IUser, "id" | "name" | "statusInfo">[];
+  members: Pick<IUser, "id" | "name" | "username" | "statusInfo">[];
+  membersWithoutMe?: Pick<IUser, "id" | "name" | "username" | "statusInfo">[];
   lastMessages: IChatListMessage[];
 };

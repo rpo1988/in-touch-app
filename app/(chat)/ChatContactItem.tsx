@@ -15,7 +15,7 @@ interface ChatContactItemProps {
   secondary?: string | null;
   selectable?: boolean;
   selected?: boolean;
-  onSelected: () => void;
+  onSelected?: () => void;
 }
 
 export default function ChatContactItem({
@@ -25,46 +25,59 @@ export default function ChatContactItem({
   selected = false,
   onSelected,
 }: ChatContactItemProps) {
+  const listItem = (
+    <>
+      <ListItemAvatar>
+        <Avatar>
+          <Person />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={primary}
+        secondary={secondary}
+        slotProps={{
+          primary: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+          secondary: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }}
+      />
+    </>
+  );
+
   return (
     <>
       <ListItem
         component="div"
-        disablePadding
+        disablePadding={selectable}
+        sx={{
+          maxHeight: 56,
+        }}
         secondaryAction={
           selectable ? (
             <Checkbox edge="end" onChange={onSelected} checked={selected} />
           ) : null
         }
       >
-        <ListItemButton
-          sx={{
-            maxHeight: 56,
-          }}
-          selected={selected}
-          onClick={onSelected}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <Person />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={primary}
-            secondary={secondary}
-            slotProps={{
-              primary: {
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              },
-              secondary: {
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              },
+        {selectable ? (
+          <ListItemButton
+            sx={{
+              maxHeight: "inherit",
             }}
-          />
-        </ListItemButton>
+            selected={selected}
+            onClick={onSelected}
+          >
+            {listItem}
+          </ListItemButton>
+        ) : (
+          listItem
+        )}
       </ListItem>
     </>
   );

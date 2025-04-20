@@ -1,4 +1,4 @@
-import { Person } from "@mui/icons-material";
+import { Group, Person } from "@mui/icons-material";
 import {
   Avatar,
   Divider,
@@ -11,11 +11,15 @@ import { grey } from "@mui/material/colors";
 export type ActiveChatHeaderProps = {
   title: string;
   subtitle?: string | null;
+  isGroup: boolean;
+  onInfoClick: () => void;
 };
 
 export default function ActiveChatHeader({
   title,
   subtitle,
+  isGroup = false,
+  onInfoClick,
 }: ActiveChatHeaderProps) {
   return (
     <>
@@ -28,10 +32,13 @@ export default function ActiveChatHeader({
           bgcolor: grey[100],
         }}
       >
-        <ListItemAvatar>
-          <Avatar>
-            <Person />
-          </Avatar>
+        <ListItemAvatar
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={onInfoClick}
+        >
+          <Avatar>{isGroup ? <Group /> : <Person />}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={title}
