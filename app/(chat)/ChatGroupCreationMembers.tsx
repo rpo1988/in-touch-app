@@ -49,7 +49,7 @@ export default function ChatGroupCreationMembers({
           onSelected={handleSelected}
         />
 
-        <div className="flex flex-row gap-3 self-end px-4">
+        <div className="flex flex-col gap-3 px-4 lg:flex-row lg:self-end">
           <Button type="button" variant="outlined" onClick={onCancel}>
             Cancel
           </Button>
