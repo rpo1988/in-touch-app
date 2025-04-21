@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_CONFIG } from "@/app/configs/auth.config";
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
 import { signup } from "@/services/auth.service";
@@ -21,15 +22,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export const SEARCH_PARAM_USERNAME = "username";
-
 interface FormValue {
   username: string;
   name: string;
   statusInfo?: string;
 }
 
-export default withoutProfile(function LoginPage() {
+const RegisterPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { me } = useMe();
   const { replace } = useRouter();
@@ -57,7 +56,9 @@ export default withoutProfile(function LoginPage() {
     try {
       setIsLoading(true);
       await registerMutation.mutateAsync(formValue);
-      replace(`/login?${SEARCH_PARAM_USERNAME}=${formValue.username}`);
+      replace(
+        `/login?${AUTH_CONFIG.searchParamUsername}=${formValue.username}`
+      );
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -178,4 +179,6 @@ export default withoutProfile(function LoginPage() {
       </Paper>
     </Box>
   );
-});
+};
+
+export default withoutProfile(RegisterPage);

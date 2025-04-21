@@ -6,7 +6,7 @@ import { withProfile } from "@/hocs/withProfile";
 import { Divider } from "@mui/material";
 import { useState } from "react";
 
-export default withProfile(function ChatPage() {
+const ChatPage: React.FC = () => {
   const [selectedChat, setSelectedChat] = useState<string>();
 
   return (
@@ -23,4 +23,6 @@ export default withProfile(function ChatPage() {
       </div>
     </div>
   );
-});
+};
+
+export default withProfile(ChatPage);

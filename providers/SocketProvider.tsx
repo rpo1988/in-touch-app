@@ -22,6 +22,7 @@ const useInternalSocket = () => {
 
     const socketInstance = io(`${URL}/chat`, {
       query: { userId },
+      withCredentials: true,
     });
     setSocket(socketInstance);
 

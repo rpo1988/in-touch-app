@@ -1,6 +1,6 @@
 "use client";
 
-import { SEARCH_PARAM_USERNAME } from "@/app/register/page";
+import { AUTH_CONFIG } from "@/app/configs/auth.config";
 import { withoutProfile } from "@/hocs/withoutProfile";
 import { useMe } from "@/providers/ProfileProvider";
 import { IApiError } from "@/types/global.types";
@@ -25,7 +25,7 @@ interface FormValue {
   username: string;
 }
 
-export default withoutProfile(function LoginPage() {
+const LoginPage: React.FC = () => {
   const [initialized, setInitialized] = useState(false);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +63,7 @@ export default withoutProfile(function LoginPage() {
     if (initialized) return;
 
     setInitialized(true);
-    const username = searchParams.get(SEARCH_PARAM_USERNAME);
+    const username = searchParams.get(AUTH_CONFIG.searchParamUsername);
     if (!username) return;
 
     setValue("username", username);
@@ -147,4 +147,6 @@ export default withoutProfile(function LoginPage() {
       </Paper>
     </Box>
   );
-});
+};
+
+export default withoutProfile(LoginPage);

@@ -31,5 +31,12 @@ export function withoutProfile<T extends WithoutProfileProps>(
     return <WrappedComponent {...props} />;
   };
 
+  // Set a display name for better debugging
+  ComponentWithoutProfile.displayName = `WithoutProfile(${
+    WrappedComponent.displayName ||
+    WrappedComponent.name ||
+    "ComponentWithoutProfile"
+  })`;
+
   return ComponentWithoutProfile;
 }
