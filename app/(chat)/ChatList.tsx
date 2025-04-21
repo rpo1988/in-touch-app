@@ -85,8 +85,8 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   });
 
   const handleContactSelected = (contactId: string) => {
-    const currentChat = chatList.find((chat) =>
-      chat.members.some((member) => member.id === contactId)
+    const currentChat = chatList.find(
+      (chat) => !chat.chat.isGroup && chat.membersWithoutMe[0].id === contactId
     );
     if (!!currentChat) {
       // Contact chat already created, so open it

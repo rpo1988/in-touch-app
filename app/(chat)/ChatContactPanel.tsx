@@ -48,7 +48,11 @@ export default function ChatContactPanel({
           </Toolbar>
           <Divider />
 
-          <ChatContactList open={open} onSelected={onSelected} />
+          <ChatContactList
+            open={open}
+            selectable="single"
+            onSelected={onSelected}
+          />
         </div>
       </Drawer>
     </>

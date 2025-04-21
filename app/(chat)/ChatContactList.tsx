@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 
 interface ChatContactListProps {
   open: boolean;
-  selectable?: boolean;
+  selectable?: false | "single" | "multi";
   selectedIds?: Map<string, boolean>;
   onSelected: (contactId: string) => void;
 }

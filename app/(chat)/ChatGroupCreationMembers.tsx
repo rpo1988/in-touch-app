@@ -44,7 +44,7 @@ export default function ChatGroupCreationMembers({
       <div className="flex flex-col gap-3">
         <ChatContactList
           open={open}
-          selectable={true}
+          selectable="multi"
           selectedIds={selectedContactIds}
           onSelected={handleSelected}
         />

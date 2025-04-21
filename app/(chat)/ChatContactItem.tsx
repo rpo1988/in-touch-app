@@ -13,7 +13,7 @@ import {
 interface ChatContactItemProps {
   primary: string;
   secondary?: string | null;
-  selectable?: boolean;
+  selectable?: false | "single" | "multi";
   selected?: boolean;
   onSelected?: () => void;
 }
@@ -55,12 +55,12 @@ export default function ChatContactItem({
     <>
       <ListItem
         component="div"
-        disablePadding={selectable}
+        disablePadding={!!selectable}
         sx={{
           maxHeight: 56,
         }}
         secondaryAction={
-          selectable ? (
+          selectable === "multi" ? (
             <Checkbox edge="end" onChange={onSelected} checked={selected} />
           ) : null
         }
