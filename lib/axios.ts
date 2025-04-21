@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from "axios";
 const WHITE_LIST = ["/login", "/register"];
 
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000/api",
+  baseURL: `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001"}/api`,
   headers: {
     "Content-Type": "application/json",
   },

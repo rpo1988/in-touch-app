@@ -2,6 +2,7 @@ import { useMe } from "@/providers/ProfileProvider";
 import { sendMessage } from "@/services/chat.service";
 import {
   ChatMessageStatusId,
+  IChatList,
   IChatListItem,
   IChatListMessage,
 } from "@/types/global.types";
@@ -9,6 +10,7 @@ import { Add, Mic, Send } from "@mui/icons-material";
 import { Box, Divider, IconButton, TextField } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -43,52 +45,123 @@ export default function ActiveChatFooter({
 
   const sendMessageMutation = useMutation({
     mutationFn: (text: string) => sendMessage(chatId, text),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    async onMutate(text) {
+      // Cancel current request
+      queryClient.cancelQueries({
         queryKey: ["chat-list-item", me!.id, chatId],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["chat-list", me!.id],
-      });
+      // Retrieve prev data before appending anything
+      const prevChatListItem = queryClient.getQueryData<IChatListItem>([
+        "chat-list-item",
+        me!.id,
+        chatId,
+      ])!;
+      // Create a fake message to append
+      const fakeMessage = {
+        id: Math.random().toString(),
+        text,
+        createdAt: new Date(),
+        user: {
+          id: me!.id,
+        },
+        status: {
+          id: ChatMessageStatusId.Sending,
+        },
+      } as IChatListMessage; // Force typing because backend response doesn't match this one but we don't need them yet
+      // Append the fake message
+      await queryClient.setQueryData<IChatListItem>(
+        ["chat-list-item", me!.id, chatId],
+        (currentData) => ({
+          ...currentData!,
+          lastMessages: [...currentData!.lastMessages, fakeMessage],
+        })
+      );
+      // Clean form
+      reset();
+      // Notify parent to scroll container
+      setTimeout(() => {
+        onMessageSent();
+      }, 100);
+      // Return prev data and the new fake message
+      return { prevData: prevChatListItem, fakeData: fakeMessage };
     },
-    onError: (error) => {
-      console.error(error);
+    onSuccess(data, text, context) {
+      // Replace the fake message for the real one
+      queryClient.setQueryData<IChatListItem>(
+        ["chat-list-item", me!.id, chatId],
+        (currentData) => ({
+          ...currentData!,
+          lastMessages: currentData!.lastMessages.map((message) =>
+            message.id === context.fakeData.id
+              ? ({
+                  id: data.id,
+                  text: data.text,
+                  createdAt: data.createdAt,
+                  user: {
+                    id: data.userId,
+                  },
+                  status: {
+                    id: data.statusId,
+                  },
+                } as IChatListMessage)
+              : message
+          ),
+        })
+      );
+      // For chat list, we didn't add the fake data before, so we only add it when it goes well
+      queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) =>
+          currentData!.map((chatList) =>
+            chatList.chat.id !== data.chatId
+              ? chatList
+              : {
+                  ...chatList,
+                  lastMessages: chatList.lastMessages.map((message) =>
+                    // We replace message only if the last message is older than we sent
+                    dayjs(message.createdAt).isBefore(dayjs(data.createdAt))
+                      ? ({
+                          id: data.id,
+                          text: data.text,
+                          createdAt: data.createdAt,
+                          user: {
+                            id: data.userId,
+                          },
+                          status: {
+                            id: data.statusId,
+                          },
+                        } as IChatListMessage)
+                      : message
+                  ),
+                }
+          )
+      );
+    },
+    onError(error, text, context) {
+      // Replace message status in order to enable resend flow
+      queryClient.setQueryData<IChatListItem>(
+        ["chat-list-item", me!.id, chatId],
+        (currentData) => ({
+          ...currentData!,
+          lastMessages: currentData!.lastMessages.map((message) =>
+            message.id === context!.fakeData.id
+              ? ({
+                  ...context!.fakeData,
+                  status: {
+                    id: ChatMessageStatusId.Error,
+                  },
+                } as IChatListMessage)
+              : message
+          ),
+        })
+      );
     },
   });
 
   const onSubmit = async (formValue: FormValue) => {
     if (!isValid) return;
 
-    await queryClient.setQueryData(
-      ["chat-list-item", me!.id, chatId],
-      (currentValue: IChatListItem) => {
-        const newValue: IChatListItem = {
-          ...currentValue,
-          lastMessages: [
-            ...currentValue.lastMessages,
-            // Creamos un mensaje fake para mostrarlo rápidamente en pantalla
-            // y luego será reemplazado cuando se invalide la caché del listado de mensajes
-            {
-              id: Math.random().toString(),
-              text: formValue.text,
-              createdAt: new Date(),
-              user: {
-                id: me!.id,
-              },
-              status: {
-                id: ChatMessageStatusId.Sending,
-              },
-            } as unknown as IChatListMessage,
-          ],
-        };
-        return newValue;
-      }
-    );
     sendMessageMutation.mutate(formValue.text);
-    reset();
-    setTimeout(() => {
-      onMessageSent();
-    }, 100);
   };
 
   useEffect(() => {

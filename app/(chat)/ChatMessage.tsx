@@ -5,7 +5,7 @@ import {
   IChatListItem,
   IChatListMessage,
 } from "@/types/global.types";
-import { Check, MoreVert, Schedule } from "@mui/icons-material";
+import { Check, ErrorOutline, MoreVert, Schedule } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem, Paper, Typography } from "@mui/material";
 import { green } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -120,6 +120,12 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
                   fontSize: 16,
                 }}
               />
+            ) : status.id === ChatMessageStatusId.Error ? (
+              <ErrorOutline
+                sx={{
+                  fontSize: 16,
+                }}
+              />
             ) : (
               <Schedule
                 sx={{
@@ -129,7 +135,8 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
             )}
           </div>
 
-          {sentByMe && (
+          {/* TODO: Pending support retry failed messages */}
+          {sentByMe && status.id !== ChatMessageStatusId.Error && (
             <>
               {/* More Options */}
               <IconButton

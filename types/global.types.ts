@@ -21,6 +21,7 @@ export type IChat = {
 };
 
 export enum ChatMessageStatusId {
+  Error = "-1",
   Sending = "0",
   Received = "1",
 }
@@ -44,9 +45,12 @@ export type IChatListMessage = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  userId?: IUser["id"];
   user: Pick<IUser, "id" | "name">;
+  statusId?: IChatMessageStatus["id"];
   status: Pick<IChatMessageStatus, "id" | "name">;
   text: string;
+  chatId?: string;
 };
 
 export type IChatList = {
