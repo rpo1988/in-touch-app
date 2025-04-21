@@ -37,16 +37,48 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
 
     const deleteMessageMutation = useMutation({
       mutationFn: () => deleteMessage(chatId, id),
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      async onMutate() {
+        // Cancel current requests
+        queryClient.cancelQueries({
           queryKey: ["chat-list-item", me!.id, chatId],
         });
-        queryClient.invalidateQueries({
-          queryKey: ["chat-list", me!.id],
-        });
+        // Retrieve prev data before appending anything
+        const prevChatListItem = queryClient.getQueryData<IChatListItem>([
+          "chat-list-item",
+          me!.id,
+          chatId,
+        ])!;
+        // Remove the message
+        await queryClient.setQueryData<IChatListItem>(
+          ["chat-list-item", me!.id, chatId],
+          (currentData) => ({
+            ...currentData!,
+            lastMessages: currentData!.lastMessages.filter(
+              (message) => message.id !== id
+            ),
+          })
+        );
+        // Return prev data and the new fake message
+        return { prevData: prevChatListItem };
       },
-      onError: (error) => {
-        console.error(error);
+      onSuccess(data, variables, context) {
+        // Invalidate chat list cache only if last message was deleted
+        const needToRevalidate =
+          context.prevData.lastMessages.slice(-1)[0].id === data.id;
+        if (needToRevalidate) {
+          queryClient.invalidateQueries({
+            queryKey: ["chat-list", me!.id],
+          });
+        }
+      },
+      onError(error, text, context) {
+        // Append deleted message again
+        queryClient.setQueryData<IChatListItem>(
+          ["chat-list-item", me!.id, chatId],
+          () => ({
+            ...context!.prevData,
+          })
+        );
       },
     });
 
@@ -57,18 +89,6 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
 
     const handleDelete = async () => {
       setAnchorEl(null);
-      await queryClient.setQueryData(
-        ["chat-list-item", me!.id, chatId],
-        (currentValue: IChatListItem) => {
-          const newValue: IChatListItem = {
-            ...currentValue,
-            lastMessages: currentValue.lastMessages.filter(
-              (msg) => msg.id !== id
-            ),
-          };
-          return newValue;
-        }
-      );
       deleteMessageMutation.mutate();
     };
 
