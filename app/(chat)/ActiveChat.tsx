@@ -3,9 +3,15 @@ import ActiveChatFooter from "@/app/(chat)/ActiveChatFooter";
 import ActiveChatHeader from "@/app/(chat)/ActiveChatHeader";
 import ChatInfoPanel from "@/app/(chat)/ChatInfoPanel";
 import { useMe } from "@/providers/ProfileProvider";
+import { useSocket } from "@/providers/SocketProvider";
 import { getChatListItem } from "@/services/chat.service";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  IChatListItem,
+  IChatListMessage,
+  IChatMessage,
+} from "@/types/global.types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type ActiveChatProps = {
   chatId?: string;
@@ -14,6 +20,8 @@ type ActiveChatProps = {
 export default function ActiveChat({ chatId }: ActiveChatProps) {
   const [openInfoPanel, setOpenInfoPanel] = useState(false);
   const { me } = useMe();
+  const { socket } = useSocket();
+  const queryClient = useQueryClient();
   const {
     data: chatListItem,
     isLoading,
@@ -51,9 +59,9 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
     });
   };
 
-  const handleMessageSent = () => {
+  const handleMessageSent = useCallback(() => {
     scrollToMessage(messageRefs.current.get(lastIdRef));
-  };
+  }, []);
 
   const toggleInfoPanel = () => {
     setOpenInfoPanel((currentValue) => !currentValue);
@@ -62,6 +70,45 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
   const handleInfoClose = () => {
     toggleInfoPanel();
   };
+
+  useEffect(() => {
+    if (!socket || !me || !queryClient || !chatId) return;
+
+    // Listening to chat messages
+    socket.on("message", (payload: IChatMessage) => {
+      // Update chat list messages only if it belongs to same chatId
+      if (payload.chatId !== chatId) return;
+
+      queryClient.setQueryData<IChatListItem>(
+        ["chat-list-item", me!.id, chatId],
+        (currentData) => ({
+          ...currentData!,
+          lastMessages: [
+            ...currentData!.lastMessages,
+            {
+              id: payload.id,
+              text: payload.text,
+              createdAt: payload.createdAt,
+              user: {
+                id: payload.userId,
+              },
+              status: {
+                id: payload.statusId,
+              },
+            } as IChatListMessage,
+          ],
+        })
+      );
+
+      setTimeout(() => {
+        handleMessageSent();
+      }, 100);
+    });
+
+    return () => {
+      socket.off("message");
+    };
+  }, [socket, me, queryClient, chatId, handleMessageSent]);
 
   useEffect(() => {
     if (initialized.current || !chatListItem?.lastMessages) return;

@@ -4,12 +4,18 @@ import ChatItem from "@/app/(chat)/ChatItem";
 import ChatListHeader from "@/app/(chat)/ChatListHeader";
 import Info from "@/app/(chat)/Info";
 import { useMe } from "@/providers/ProfileProvider";
+import { useSocket } from "@/providers/SocketProvider";
 import { createChat, deleteChat, getChatList } from "@/services/chat.service";
-import { IChat, IChatList } from "@/types/global.types";
+import {
+  IChat,
+  IChatList,
+  IChatListMessage,
+  IChatMessage,
+} from "@/types/global.types";
 import { transform } from "@/utils/text";
 import { CircularProgress, List } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ChatListProps = {
   selectedId?: string;
@@ -18,6 +24,7 @@ type ChatListProps = {
 
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   const { me } = useMe();
+  const { socket } = useSocket();
   const [openContactPanel, setOpenContactPanel] = useState(false);
   const [openGroupCreationPanel, setOpenGroupCreationPanel] = useState(false);
   const queryClient = useQueryClient();
@@ -27,7 +34,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     error,
   } = useQuery({
     queryKey: ["chat-list", me!.id],
-    queryFn: () => getChatList(),
+    queryFn: getChatList,
     select: (list) =>
       list.map((item) => ({
         ...item,
@@ -127,6 +134,49 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     toggleContactPanel();
     toggleGroupCreationPanel();
   };
+
+  useEffect(() => {
+    if (!socket || !chatList || !me || !queryClient) return;
+
+    // Join to chats
+    socket.emit(
+      "joinChats",
+      chatList.map((child) => child.chat.id)
+    );
+
+    // Listening to chat messages
+    socket.on("message", (payload: IChatMessage) => {
+      // Update chat list
+      queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) =>
+          currentData!.map((chatList) =>
+            chatList.chat.id === payload.chatId
+              ? {
+                  ...chatList,
+                  lastMessages: [
+                    {
+                      id: payload.id,
+                      text: payload.text,
+                      createdAt: payload.createdAt,
+                      user: {
+                        id: payload.userId,
+                      },
+                      status: {
+                        id: payload.statusId,
+                      },
+                    } as IChatListMessage,
+                  ],
+                }
+              : chatList
+          )
+      );
+    });
+
+    return () => {
+      socket.off("message");
+    };
+  }, [socket, chatList, me, queryClient]);
 
   if (isLoading)
     return (

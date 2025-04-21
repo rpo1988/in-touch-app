@@ -21,13 +21,9 @@ const useInternalSocket = () => {
     if (!userId) return;
 
     const socketInstance = io(`${URL}/chat`, {
-      autoConnect: false,
       query: { userId },
     });
     setSocket(socketInstance);
-
-    // Connect after logged in
-    socketInstance.connect();
 
     // Notify login
     socketInstance.emit("connected", { userId });
