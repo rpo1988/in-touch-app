@@ -58,7 +58,7 @@ export default forwardRef<HTMLDivElement, ChatMessageProps>(
             ),
           })
         );
-        // Return prev data and the new fake message
+        // Return prev data
         return { prevData: prevChatListItem };
       },
       onSuccess(data, variables, context) {

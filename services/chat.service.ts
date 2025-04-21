@@ -47,8 +47,8 @@ export const createChat = async (
   body: Pick<IChat, "isGroup" | "title" | "description"> & {
     memberIds: IUser["id"][];
   }
-): Promise<IChat> => {
-  const response = await api.post<IChat>("/chat-list", body);
+): Promise<IChatList> => {
+  const response = await api.post<IChatList>("/chat-list", body);
   return response.data;
 };
 

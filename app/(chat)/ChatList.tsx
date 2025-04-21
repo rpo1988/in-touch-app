@@ -36,26 +36,44 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
   });
   const createChatMutation = useMutation({
     mutationFn: createChat,
-    onSuccess: async (newChat) => {
-      queryClient.invalidateQueries({
-        queryKey: ["chat-list", me!.id],
-      });
-      onSelected(newChat.id);
-    },
-    onError: (error) => {
-      console.error(error);
+    async onSuccess(data) {
+      await queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) => [...currentData!, data]
+      );
+      onSelected(data.chat.id);
     },
   });
   const deleteChatMutation = useMutation({
     mutationFn: deleteChat,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    async onMutate(chatId) {
+      // Cancel current requests
+      queryClient.cancelQueries({
         queryKey: ["chat-list", me!.id],
       });
-      onSelected();
+      // Retrieve prev data before appending anything
+      const prevChatList = queryClient.getQueryData<IChatList[]>([
+        "chat-list",
+        me!.id,
+      ])!;
+      // Remove the chat
+      await queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) =>
+          currentData!.filter((child) => child.chat.id !== chatId)
+      );
+      // Return prev data
+      return { prevData: prevChatList };
     },
-    onError: (error) => {
-      console.error(error);
+    onSuccess(data, chatId) {
+      // Unselect chat if it was selected
+      if (selectedId === chatId) onSelected();
+    },
+    onError(error, chatId, context) {
+      // Append deleted chat again
+      queryClient.setQueryData<IChatList[]>(["chat-list", me!.id], () => [
+        ...context!.prevData,
+      ]);
     },
   });
 
@@ -75,12 +93,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     }
   };
 
-  const handleDelete = (chatId: string) => async () => {
-    await queryClient.setQueryData(
-      ["chat-list", me!.id],
-      (currentValue: IChatList[]) =>
-        currentValue.filter((chat) => chat.chat.id !== chatId)
-    );
+  const handleDelete = (chatId: string) => () => {
     deleteChatMutation.mutate(chatId);
   };
 
