@@ -11,24 +11,24 @@ export function withoutProfile<T extends WithoutProfileProps>(
   WrappedComponent: ComponentType<T>
 ) {
   const ComponentWithoutProfile: React.FC<T> = (props) => {
-    const { me, isFetching } = useMe();
+    const { me, initialized } = useMe();
     const router = useRouter();
 
     useEffect(() => {
-      if (!isFetching && !!me) {
+      if (initialized && !!me) {
         return router.replace("/");
       }
-    }, [me, isFetching, router]);
+    }, [me, initialized, router]);
 
-    if (isFetching || !!me) {
-      return (
-        <div className="w-screen h-screen flex items-center justify-center">
-          <CircularProgress />
-        </div>
-      );
+    if (initialized && !me) {
+      return <WrappedComponent {...props} />;
     }
 
-    return <WrappedComponent {...props} />;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <CircularProgress />
+      </div>
+    );
   };
 
   // Set a display name for better debugging

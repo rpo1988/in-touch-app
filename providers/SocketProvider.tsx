@@ -1,6 +1,6 @@
 "use client";
 
-import { useMe } from "@/providers/ProfileProvider";
+import { getToken, useMe } from "@/providers/ProfileProvider";
 import {
   createContext,
   PropsWithChildren,
@@ -22,7 +22,7 @@ const useInternalSocket = () => {
 
     const socketInstance = io(`${URL}/chat`, {
       query: { userId },
-      withCredentials: true,
+      auth: { token: getToken() },
     });
     setSocket(socketInstance);
 

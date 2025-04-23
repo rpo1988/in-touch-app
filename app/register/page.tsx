@@ -2,7 +2,6 @@
 
 import { AUTH_CONFIG } from "@/app/configs/auth.config";
 import { withoutProfile } from "@/hocs/withoutProfile";
-import { useMe } from "@/providers/ProfileProvider";
 import { signup } from "@/services/auth.service";
 import { IApiError, IUser } from "@/types/global.types";
 import { getApiErrorMessage } from "@/utils/api";
@@ -29,8 +28,7 @@ interface FormValue {
 }
 
 const RegisterPage: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const { me } = useMe();
+  const [isLoading, setIsLoading] = useState(false);
   const { replace } = useRouter();
   const {
     control,
@@ -69,12 +67,6 @@ const RegisterPage: React.FC = () => {
     if (isLoading) return;
     usernameRef?.current?.focus();
   }, [isLoading]);
-
-  useEffect(() => {
-    if (!!me) return replace("/");
-
-    setIsLoading(false);
-  }, [me, replace]);
 
   return (
     <Box className="w-full h-full flex items-center justify-center p-4">

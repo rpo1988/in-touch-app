@@ -17,7 +17,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -28,9 +28,8 @@ interface FormValue {
 const LoginPage: React.FC = () => {
   const [initialized, setInitialized] = useState(false);
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const { me, login } = useMe();
-  const { replace } = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useMe();
   const {
     control,
     formState: { isValid },
@@ -52,7 +51,6 @@ const LoginPage: React.FC = () => {
     try {
       setIsLoading(true);
       await loginMutation.mutateAsync(formValue.username);
-      replace("/");
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -73,12 +71,6 @@ const LoginPage: React.FC = () => {
     if (isLoading) return;
     inputRef?.current?.focus();
   }, [isLoading]);
-
-  useEffect(() => {
-    if (!!me) return replace("/");
-
-    setIsLoading(false);
-  }, [me, replace]);
 
   return (
     <Box className="w-full h-full flex items-center justify-center p-4">

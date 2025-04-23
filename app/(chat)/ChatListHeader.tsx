@@ -3,7 +3,6 @@
 import { useMe } from "@/providers/ProfileProvider";
 import { Add, Logout } from "@mui/icons-material";
 import { Divider, IconButton, Toolbar, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
 
 interface ChatListHeaderProps {
   onAddClick: () => void;
@@ -11,11 +10,9 @@ interface ChatListHeaderProps {
 
 export default function ChatListHeader({ onAddClick }: ChatListHeaderProps) {
   const { logout } = useMe();
-  const { replace } = useRouter();
 
   const handleLogout = () => {
     logout();
-    replace("/login");
   };
 
   return (

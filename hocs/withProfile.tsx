@@ -11,24 +11,24 @@ export function withProfile<T extends WithProfileProps>(
   WrappedComponent: ComponentType<T>
 ) {
   const ComponentWithProfile: React.FC<T> = (props) => {
-    const { me, isFetching } = useMe();
+    const { me, initialized } = useMe();
     const router = useRouter();
 
     useEffect(() => {
-      if (!isFetching && !me) {
+      if (initialized && !me) {
         return router.replace("/login");
       }
-    }, [me, isFetching, router]);
+    }, [initialized, me, router]);
 
-    if (isFetching || !me) {
-      return (
-        <div className="w-screen h-screen flex items-center justify-center">
-          <CircularProgress />
-        </div>
-      );
+    if (initialized && me) {
+      return <WrappedComponent {...props} />;
     }
 
-    return <WrappedComponent {...props} />;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <CircularProgress />
+      </div>
+    );
   };
 
   // Set a display name for better debugging

@@ -1,40 +1,71 @@
 "use client";
 
-import { signin, signout } from "@/services/auth.service";
+import { signin } from "@/services/auth.service";
 import { getMe } from "@/services/user.service";
-import { CircularProgress } from "@mui/material";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, PropsWithChildren, useContext } from "react";
+import { IUser } from "@/types/global.types";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+export const getToken = () => {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem("token");
+};
+
+export const setToken = (token: string | null) => {
+  if (token) {
+    window.localStorage.setItem("token", token);
+  } else {
+    window.localStorage.removeItem("token");
+  }
+};
 
 const useInternalProfile = () => {
-  const queryClient = useQueryClient();
-  const { data, isFetching, error } = useQuery({
-    initialData: null,
-    queryKey: ["me"],
-    queryFn: () => getMe(),
-    retry: false,
-  });
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [user, setUser] = useState<IUser | null>(null);
+
+  const afterLogin = async (token: string | null) => {
+    if (!token) {
+      setToken(null);
+      setUser(null);
+    } else {
+      setToken(token);
+      const userResponse = await getMe();
+      setUser(userResponse);
+    }
+  };
 
   const login = async (username: string) => {
     const data = await signin({ username });
-    queryClient.setQueryData(["me"], data);
-    queryClient.invalidateQueries({
-      queryKey: ["me"],
-    });
+    await afterLogin(data.access_token);
   };
 
   const logout = async () => {
-    await signout();
-    queryClient.cancelQueries();
-    queryClient.resetQueries({
-      queryKey: ["me"],
-    });
+    setToken(null);
+    setUser(null);
   };
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await afterLogin(getToken());
+      } catch (error) {
+        // Invalid token, so remove it
+        setToken(null);
+      }
+      setInitialized(true);
+    };
+
+    init();
+  }, []);
+
   return {
-    me: data,
-    isFetching,
-    error,
+    initialized,
+    me: user,
     login,
     logout,
   };
@@ -42,7 +73,7 @@ const useInternalProfile = () => {
 
 const ProfileContext = createContext<Pick<
   ReturnType<typeof useInternalProfile>,
-  "me" | "isFetching" | "error" | "login" | "logout"
+  "me" | "initialized" | "login" | "logout"
 > | null>(null);
 
 export const useMe = () => {
@@ -58,25 +89,11 @@ export const useMe = () => {
 type ProfileProviderProps = PropsWithChildren;
 
 export const ProfileProvider = ({ children }: ProfileProviderProps) => {
-  const { me, isFetching, error, login, logout } = useInternalProfile();
+  const profile = useInternalProfile();
 
   return (
-    <ProfileContext.Provider
-      value={{
-        me,
-        isFetching,
-        error,
-        login,
-        logout,
-      }}
-    >
-      {isFetching ? (
-        <div className="w-screen h-screen flex items-center justify-center">
-          <CircularProgress />
-        </div>
-      ) : (
-        children
-      )}
+    <ProfileContext.Provider value={profile}>
+      {children}
     </ProfileContext.Provider>
   );
 };
