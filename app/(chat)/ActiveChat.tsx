@@ -130,6 +130,7 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
       <div className="w-full h-full flex flex-col">
         {!!chatListItem && (
           <ActiveChatHeader
+            id={chatId!}
             title={title}
             subtitle={description}
             isGroup={chatListItem.chat.isGroup}

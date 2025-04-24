@@ -82,6 +82,7 @@ export default function ChatContactList({
             {filteredContacts.map((contact) => (
               <ChatContactItem
                 key={contact.id}
+                id={contact.id}
                 primary={contact.name}
                 secondary={contact.statusInfo}
                 selectable={selectable}

@@ -257,6 +257,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
           chatList.map((item) => (
             <ChatItem
               key={item.chat.id}
+              id={item.chat.id}
               primary={
                 item.chat.isGroup
                   ? item.chat.title!

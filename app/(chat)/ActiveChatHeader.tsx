@@ -7,8 +7,10 @@ import {
   ListItemText,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import randomColor from "randomcolor";
 
 export type ActiveChatHeaderProps = {
+  id: string;
   title: string;
   subtitle?: string | null;
   isGroup: boolean;
@@ -16,6 +18,7 @@ export type ActiveChatHeaderProps = {
 };
 
 export default function ActiveChatHeader({
+  id,
   title,
   subtitle,
   isGroup = false,
@@ -38,7 +41,17 @@ export default function ActiveChatHeader({
           }}
           onClick={onInfoClick}
         >
-          <Avatar>{isGroup ? <Group /> : <Person />}</Avatar>
+          <Avatar
+            sx={{
+              backgroundColor: randomColor({
+                seed: id,
+                luminosity: isGroup ? "light" : "bright",
+                format: "hex",
+              }),
+            }}
+          >
+            {isGroup ? <Group /> : <Person />}
+          </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={title}

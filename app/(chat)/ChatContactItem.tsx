@@ -9,8 +9,10 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
+import randomColor from "randomcolor";
 
 interface ChatContactItemProps {
+  id: string;
   primary: string;
   secondary?: string | null;
   selectable?: false | "single" | "multi";
@@ -19,6 +21,7 @@ interface ChatContactItemProps {
 }
 
 export default function ChatContactItem({
+  id,
   primary,
   secondary,
   selectable = false,
@@ -28,7 +31,15 @@ export default function ChatContactItem({
   const listItem = (
     <>
       <ListItemAvatar>
-        <Avatar>
+        <Avatar
+          sx={{
+            backgroundColor: randomColor({
+              seed: id,
+              luminosity: "bright",
+              format: "hex",
+            }),
+          }}
+        >
           <Person />
         </Avatar>
       </ListItemAvatar>

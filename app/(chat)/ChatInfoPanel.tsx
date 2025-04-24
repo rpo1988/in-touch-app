@@ -113,6 +113,7 @@ export default function ChatInfoPanel({
                       {chatInfo.membersWithoutMe?.map((member) => (
                         <ChatContactItem
                           key={member.id}
+                          id={member.id}
                           primary={member.name}
                           secondary={member.statusInfo}
                         />

@@ -11,9 +11,11 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import randomColor from "randomcolor";
 import { useState } from "react";
 
 export type ChatItemProps = {
+  id: string;
   primary: string;
   secondary?: string;
   third: Date | string;
@@ -24,6 +26,7 @@ export type ChatItemProps = {
 };
 
 export default function ChatItem({
+  id,
   primary,
   secondary,
   third,
@@ -59,7 +62,17 @@ export default function ChatItem({
           }}
         >
           <ListItemAvatar>
-            <Avatar>{isGroup ? <Group /> : <Person />}</Avatar>
+            <Avatar
+              sx={{
+                backgroundColor: randomColor({
+                  seed: id,
+                  luminosity: isGroup ? "light" : "bright",
+                  format: "hex",
+                }),
+              }}
+            >
+              {isGroup ? <Group /> : <Person />}
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={primary}
