@@ -14,10 +14,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type ActiveChatProps = {
-  chatId?: string;
+  chatId: string | null;
+  onCloseClick: () => void;
 };
 
-export default function ActiveChat({ chatId }: ActiveChatProps) {
+export default function ActiveChat({ chatId, onCloseClick }: ActiveChatProps) {
   const [openInfoPanel, setOpenInfoPanel] = useState(false);
   const { me } = useMe();
   const { socket } = useSocket();
@@ -135,6 +136,7 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
             subtitle={description}
             isGroup={chatListItem.chat.isGroup}
             onInfoClick={toggleInfoPanel}
+            onCloseClick={onCloseClick}
           />
         )}
         <ActiveChatContent

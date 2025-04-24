@@ -21,11 +21,11 @@ export default function ChatListHeader({ onAddClick }: ChatListHeaderProps) {
         <Typography variant="h6" noWrap component="div">
           {me!.name}&apos;s Chats
         </Typography>
-        <div>
+        <div className="flex gap-1">
           <IconButton onClick={onAddClick}>
             <Add />
           </IconButton>
-          <IconButton onClick={handleLogout}>
+          <IconButton edge="end" onClick={handleLogout}>
             <Logout />
           </IconButton>
         </div>

@@ -19,8 +19,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type ChatListProps = {
-  selectedId?: string;
-  onSelected: (id?: string) => void;
+  selectedId: string | null;
+  onSelected: (id: string | null) => void;
 };
 
 export default function ChatList({ selectedId, onSelected }: ChatListProps) {
@@ -77,7 +77,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     },
     onSuccess(data, chatId) {
       // Unselect chat if it was selected
-      if (selectedId === chatId) onSelected();
+      if (selectedId === chatId) onSelected(null);
     },
     onError(error, chatId, context) {
       // Append deleted chat again

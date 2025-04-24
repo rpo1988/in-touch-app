@@ -5,6 +5,7 @@ import ChatGroupCreationMembers from "@/app/(chat)/ChatGroupCreationMembers";
 import { IChat } from "@/types/global.types";
 import { ArrowBack } from "@mui/icons-material";
 import {
+  Box,
   Divider,
   Drawer,
   IconButton,
@@ -72,7 +73,12 @@ export default function ChatGroupCreationPanel({
   return (
     <>
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <div className="w-[33vw] min-w-[300px]">
+        <Box
+          sx={{
+            width: { xs: "100vw", sm: "33vw" },
+            minWidth: { sm: "300px" },
+          }}
+        >
           <Toolbar className="flex flex-row gap-2.5">
             <IconButton edge="start" onClick={handleBackClick}>
               <ArrowBack />
@@ -99,7 +105,7 @@ export default function ChatGroupCreationPanel({
               onCreate={handleCreate}
             />
           )}
-        </div>
+        </Box>
       </Drawer>
     </>
   );

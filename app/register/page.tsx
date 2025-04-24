@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { blueGrey } from "@mui/material/colors";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
@@ -69,10 +70,15 @@ const RegisterPage: React.FC = () => {
   }, [isLoading]);
 
   return (
-    <Box className="w-full h-full flex items-center justify-center p-4">
+    <Box
+      className="w-full h-full flex items-center justify-center p-6"
+      sx={{
+        bgcolor: blueGrey[50],
+      }}
+    >
       <Paper
-        className="w-full max-w-[300px] flex flex-col p-10"
-        variant="outlined"
+        className="w-full max-w-[400px] flex flex-col px-4 py-6 sm:p-10"
+        elevation={4}
         sx={{
           borderRadius: 2,
         }}

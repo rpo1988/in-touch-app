@@ -7,7 +7,7 @@ import {
   IChatListMessage,
 } from "@/types/global.types";
 import { Add, Mic, Send } from "@mui/icons-material";
-import { Box, Divider, IconButton, TextField } from "@mui/material";
+import { Box, Divider, IconButton, TextField, Toolbar } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -172,41 +172,64 @@ export default function ActiveChatFooter({
   return (
     <>
       <Divider />
-      <Box
-        component="form"
-        autoComplete="off"
-        noValidate
+      <Toolbar
         sx={{
           bgcolor: grey[100],
         }}
-        className="flex flex-row py-2 px-4 gap-3 items-center"
-        onSubmit={handleSubmit(onSubmit)}
       >
-        <IconButton disabled>
-          <Add />
-        </IconButton>
-        <Controller
-          name="text"
-          control={control}
-          rules={{ required: "This field is required." }}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              placeholder="Type a message"
-              variant="outlined"
-              className="grow"
-              sx={{
-                bgcolor: "white",
-              }}
-              autoComplete="off"
-              inputRef={inputRef}
-            />
-          )}
-        />
-        <IconButton type={!text ? "button" : "submit"} disabled={!text}>
-          {!text ? <Mic /> : <Send />}
-        </IconButton>
-      </Box>
+        <Box
+          component="form"
+          autoComplete="off"
+          noValidate
+          className="w-full flex flex-row py-2 items-center"
+          sx={{
+            gap: {
+              xs: 0.5,
+              sm: 1,
+            },
+          }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <IconButton edge="start" disabled>
+            <Add />
+          </IconButton>
+          <Controller
+            name="text"
+            control={control}
+            rules={{ required: "This field is required." }}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                placeholder="Type a message"
+                variant="outlined"
+                className="grow"
+                size="small"
+                sx={{
+                  bgcolor: "white",
+                }}
+                slotProps={{
+                  htmlInput: {
+                    sx: {
+                      paddingY: {
+                        sm: "16.5px",
+                      },
+                    },
+                  },
+                }}
+                autoComplete="off"
+                inputRef={inputRef}
+              />
+            )}
+          />
+          <IconButton
+            type={!text ? "button" : "submit"}
+            edge="end"
+            disabled={!text}
+          >
+            {!text ? <Mic /> : <Send />}
+          </IconButton>
+        </Box>
+      </Toolbar>
     </>
   );
 }

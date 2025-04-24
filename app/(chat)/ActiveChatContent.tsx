@@ -2,7 +2,8 @@ import ChatDateMessage from "@/app/(chat)/ChatDateMessage";
 import ChatMessage from "@/app/(chat)/ChatMessage";
 import { useMe } from "@/providers/ProfileProvider";
 import { IChatListMessage } from "@/types/global.types";
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
+import { blueGrey } from "@mui/material/colors";
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { RefObject, useCallback, useMemo } from "react";
@@ -64,15 +65,18 @@ export default function ActiveChatContent({
 
   return (
     <>
-      <div
-        className={clsx("grow overflow-y-auto bg-gray-200 flex flex-col", {
+      <Box
+        className={clsx("grow overflow-y-auto flex flex-col", {
           "items-center": isLoading,
           "justify-center": isLoading,
         })}
+        sx={{
+          bgcolor: blueGrey[50],
+        }}
       >
         {isLoading ? <CircularProgress /> : !!data ? allTypeOfMessages : null}
         <div ref={setMessageRef(lastIdRef)}>{/* DO NOT REMOVE IT */}</div>
-      </div>
+      </Box>
     </>
   );
 }

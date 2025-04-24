@@ -58,6 +58,13 @@ export default function ChatContactListSearcher({
                     </InputAdornment>
                   ),
                 },
+                htmlInput: {
+                  sx: {
+                    paddingY: {
+                      sm: "16.5px",
+                    },
+                  },
+                },
               }}
             />
           )}

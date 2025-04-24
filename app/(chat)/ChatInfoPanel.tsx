@@ -6,6 +6,7 @@ import { IChatListItem } from "@/types/global.types";
 import { Close, Group, Person } from "@mui/icons-material";
 import {
   Avatar,
+  Box,
   Divider,
   Drawer,
   IconButton,
@@ -32,7 +33,13 @@ export default function ChatInfoPanel({
   return (
     <>
       <Drawer anchor="right" open={open} onClose={handleClose}>
-        <div className="w-screen lg:w-[67vw] min-w-[300px]">
+        <Box
+          sx={{
+            width: { xs: "100vw", md: "67vw" },
+            minWidth: { md: "300px" },
+            maxWidth: { md: "600px" },
+          }}
+        >
           <Toolbar className="flex flex-row gap-2.5 justify-between">
             <div className="flex flex-row gap-2.5 items-center">
               <IconButton edge="start" onClick={onClose}>
@@ -131,7 +138,7 @@ export default function ChatInfoPanel({
               )}
             </div>
           )}
-        </div>
+        </Box>
       </Drawer>
     </>
   );

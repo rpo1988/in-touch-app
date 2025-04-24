@@ -1,10 +1,12 @@
-import { Group, Person } from "@mui/icons-material";
+import { ArrowBack, Group, Person } from "@mui/icons-material";
 import {
   Avatar,
   Divider,
+  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Toolbar,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import randomColor from "randomcolor";
@@ -15,6 +17,7 @@ export type ActiveChatHeaderProps = {
   subtitle?: string | null;
   isGroup: boolean;
   onInfoClick: () => void;
+  onCloseClick: () => void;
 };
 
 export default function ActiveChatHeader({
@@ -23,48 +26,58 @@ export default function ActiveChatHeader({
   subtitle,
   isGroup = false,
   onInfoClick,
+  onCloseClick,
 }: ActiveChatHeaderProps) {
   return (
     <>
-      <ListItem
-        component="div"
+      <Toolbar
+        className="flex flex-row justify-between"
         sx={{
-          height: "64px",
-          minHeight: "64px",
-          maxHeight: "64px",
           bgcolor: grey[100],
         }}
       >
-        <ListItemAvatar
-          sx={{
-            cursor: "pointer",
-          }}
-          onClick={onInfoClick}
-        >
-          <Avatar
+        <ListItem disablePadding component="div">
+          <IconButton
+            edge="start"
             sx={{
-              backgroundColor: randomColor({
-                seed: id,
-                luminosity: isGroup ? "light" : "bright",
-                format: "hex",
-              }),
+              marginRight: 0.5,
+              flexShrink: 0,
             }}
+            onClick={onCloseClick}
           >
-            {isGroup ? <Group /> : <Person />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={title}
-          secondary={subtitle}
-          slotProps={{
-            secondary: {
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            },
-          }}
-        />
-      </ListItem>
+            <ArrowBack />
+          </IconButton>
+          <ListItemAvatar
+            sx={{
+              cursor: "pointer",
+            }}
+            onClick={onInfoClick}
+          >
+            <Avatar
+              sx={{
+                backgroundColor: randomColor({
+                  seed: id,
+                  luminosity: isGroup ? "light" : "bright",
+                  format: "hex",
+                }),
+              }}
+            >
+              {isGroup ? <Group /> : <Person />}
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={title}
+            secondary={subtitle}
+            slotProps={{
+              secondary: {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              },
+            }}
+          />
+        </ListItem>
+      </Toolbar>
       <Divider />
     </>
   );

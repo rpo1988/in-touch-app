@@ -3,6 +3,7 @@
 import ChatContactList from "@/app/(chat)/ChatContactList";
 import { ArrowBack, GroupAdd } from "@mui/icons-material";
 import {
+  Box,
   Divider,
   Drawer,
   IconButton,
@@ -30,7 +31,12 @@ export default function ChatContactPanel({
   return (
     <>
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <div className="w-[33vw] min-w-[300px]">
+        <Box
+          sx={{
+            width: { xs: "100vw", sm: "33vw" },
+            minWidth: { sm: "300px" },
+          }}
+        >
           <Toolbar className="flex flex-row gap-2.5 justify-between">
             <div className="flex flex-row gap-2.5 items-center">
               <IconButton edge="start" onClick={onClose}>
@@ -41,7 +47,7 @@ export default function ChatContactPanel({
               </Typography>
             </div>
             <div>
-              <IconButton onClick={onAddGroupClick}>
+              <IconButton edge="end" onClick={onAddGroupClick}>
                 <GroupAdd />
               </IconButton>
             </div>
@@ -53,7 +59,7 @@ export default function ChatContactPanel({
             selectable="single"
             onSelected={onSelected}
           />
-        </div>
+        </Box>
       </Drawer>
     </>
   );
