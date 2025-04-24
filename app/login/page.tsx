@@ -26,18 +26,16 @@ interface FormValue {
 }
 
 const LoginPage: React.FC = () => {
-  const [initialized, setInitialized] = useState(false);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useMe();
   const {
     control,
     formState: { isValid },
-    setValue,
     handleSubmit,
   } = useForm<FormValue>({
     defaultValues: {
-      username: "",
+      username: searchParams.get(AUTH_CONFIG.searchParamUsername) || "",
     },
   });
   const loginMutation = useMutation<void, AxiosError<IApiError>, string>({
@@ -56,16 +54,6 @@ const LoginPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (initialized) return;
-
-    setInitialized(true);
-    const username = searchParams.get(AUTH_CONFIG.searchParamUsername);
-    if (!username) return;
-
-    setValue("username", username);
-  }, [initialized, searchParams, setValue]);
 
   useEffect(() => {
     if (isLoading) return;
