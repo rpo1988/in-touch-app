@@ -36,6 +36,7 @@ export type IChatMessage = {
   createdAt: Date;
   updatedAt: Date;
   userId: string;
+  user?: Pick<IUser, "id" | "name">;
   chatId: string;
   statusId: string;
   text: string;
@@ -65,3 +66,7 @@ export type IChatListItem = {
   membersWithoutMe?: Pick<IUser, "id" | "name" | "username" | "statusInfo">[];
   lastMessages: IChatListMessage[];
 };
+
+export interface IEventRemoveChat {
+  chatId: string;
+}

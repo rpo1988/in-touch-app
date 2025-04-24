@@ -13,14 +13,15 @@ import {
 
 export const getToken = () => {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem("token");
+  return window.sessionStorage.getItem("token");
 };
 
 export const setToken = (token: string | null) => {
+  if (typeof window === "undefined") return;
   if (token) {
-    window.localStorage.setItem("token", token);
+    window.sessionStorage.setItem("token", token);
   } else {
-    window.localStorage.removeItem("token");
+    window.sessionStorage.removeItem("token");
   }
 };
 

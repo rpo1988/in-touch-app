@@ -9,7 +9,7 @@ interface ChatListHeaderProps {
 }
 
 export default function ChatListHeader({ onAddClick }: ChatListHeaderProps) {
-  const { logout } = useMe();
+  const { me, logout } = useMe();
 
   const handleLogout = () => {
     logout();
@@ -19,7 +19,7 @@ export default function ChatListHeader({ onAddClick }: ChatListHeaderProps) {
     <>
       <Toolbar className="flex flex-row justify-between">
         <Typography variant="h6" noWrap component="div">
-          Chats
+          {me!.name}&apos;s Chats
         </Typography>
         <div>
           <IconButton onClick={onAddClick}>

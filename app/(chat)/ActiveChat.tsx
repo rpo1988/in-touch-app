@@ -71,11 +71,8 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
     toggleInfoPanel();
   };
 
-  useEffect(() => {
-    if (!socket || !me || !queryClient || !chatId) return;
-
-    // Listening to chat messages
-    socket.on("message", (payload: IChatMessage) => {
+  const handleMessage = useCallback(
+    (payload: IChatMessage) => {
       // Update chat list messages only if it belongs to same chatId
       if (payload.chatId !== chatId) return;
 
@@ -91,6 +88,7 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
               createdAt: payload.createdAt,
               user: {
                 id: payload.userId,
+                name: payload.user?.name || payload.userId,
               },
               status: {
                 id: payload.statusId,
@@ -103,12 +101,20 @@ export default function ActiveChat({ chatId }: ActiveChatProps) {
       setTimeout(() => {
         handleMessageSent();
       }, 100);
-    });
+    },
+    [chatId, me, queryClient, handleMessageSent]
+  );
+
+  useEffect(() => {
+    if (!socket || !me || !queryClient || !chatId) return;
+
+    // Listening to chat messages
+    socket.on("message", handleMessage);
 
     return () => {
-      socket.off("message");
+      socket.off("message", handleMessage);
     };
-  }, [socket, me, queryClient, chatId, handleMessageSent]);
+  }, [socket, me, queryClient, chatId, handleMessage, handleMessageSent]);
 
   useEffect(() => {
     if (initialized.current || !chatListItem?.lastMessages) return;

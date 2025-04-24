@@ -11,11 +11,12 @@ import {
   IChatList,
   IChatListMessage,
   IChatMessage,
+  IEventRemoveChat,
 } from "@/types/global.types";
 import { transform } from "@/utils/text";
 import { CircularProgress, List } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type ChatListProps = {
   selectedId?: string;
@@ -41,6 +42,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
         membersWithoutMe: item.members.filter((item) => item.id !== me!.id),
       })),
   });
+
   const createChatMutation = useMutation({
     mutationFn: createChat,
     async onSuccess(data) {
@@ -51,6 +53,7 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
       onSelected(data.chat.id);
     },
   });
+
   const deleteChatMutation = useMutation({
     mutationFn: deleteChat,
     async onMutate(chatId) {
@@ -135,17 +138,10 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
     toggleGroupCreationPanel();
   };
 
-  useEffect(() => {
-    if (!socket || !chatList || !me || !queryClient) return;
+  const joinedChatListIds = useRef<string[]>([]);
 
-    // Join to chats
-    socket.emit(
-      "joinChats",
-      chatList.map((child) => child.chat.id)
-    );
-
-    // Listening to chat messages
-    socket.on("message", (payload: IChatMessage) => {
+  const handleMessage = useCallback(
+    (payload: IChatMessage) => {
       // Update chat list
       queryClient.setQueryData<IChatList[]>(
         ["chat-list", me!.id],
@@ -171,12 +167,69 @@ export default function ChatList({ selectedId, onSelected }: ChatListProps) {
               : chatList
           )
       );
-    });
+    },
+    [me, queryClient]
+  );
+
+  const handleRemoveChat = useCallback(
+    (payload: IEventRemoveChat) => {
+      // Update chat list
+      queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) =>
+          currentData!.filter((chatList) => chatList.chat.id !== payload.chatId)
+      );
+    },
+    [me, queryClient]
+  );
+
+  const handleCreateChat = useCallback(
+    (payload: IChatList) => {
+      // Update chat list
+      queryClient.setQueryData<IChatList[]>(
+        ["chat-list", me!.id],
+        (currentData) => [...currentData!, payload]
+      );
+    },
+    [me, queryClient]
+  );
+
+  useEffect(() => {
+    if (!socket || !chatList || !me || !queryClient) return;
+
+    const chatListIds = chatList.map((child) => child.chat.id);
+    const pendingChatListIds = chatListIds.reduce((acc, id) => {
+      return joinedChatListIds.current.includes(id) ? acc : [...acc, id];
+    }, [] as string[]);
+
+    // Join to chats
+    if (pendingChatListIds.length) {
+      joinedChatListIds.current = [
+        ...joinedChatListIds.current,
+        ...pendingChatListIds,
+      ];
+      socket.emit("joinChats", pendingChatListIds);
+    }
+
+    // Listening to chat events
+    socket.on("message", handleMessage);
+    socket.on("removeChat", handleRemoveChat);
+    socket.on("createChat", handleCreateChat);
 
     return () => {
-      socket.off("message");
+      socket.off("message", handleMessage);
+      socket.off("removeChat", handleRemoveChat);
+      socket.off("createChat", handleCreateChat);
     };
-  }, [socket, chatList, me, queryClient]);
+  }, [
+    socket,
+    chatList,
+    me,
+    queryClient,
+    handleMessage,
+    handleRemoveChat,
+    handleCreateChat,
+  ]);
 
   if (isLoading)
     return (
